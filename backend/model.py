@@ -15,12 +15,12 @@ class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(50), nullable=False)
     password_hash = db.Column(db.String(255), nullable=False)
-    role = db.Column(db.String(20))
+    email = db.Column(db.String(100), nullable=False)
     registration_date = db.Column(db.DateTime, default=datetime.now(timezone.utc).replace(tzinfo=None))
-    points = db.Column(db.Integer, default=0)
-    level_id = db.Column(db.Integer, db.ForeignKey('levels.level_id'))
+    points = db.Column(db.Integer, default=0) # total points earned by the user
+    level_id = db.Column(db.Integer, db.ForeignKey('levels.level_id')) # current level of the user
 
-    levels = db.relationship('Level', back_populates='users')
+    levels = db.relationship('Level', back_populates='user')
     teams_created = db.relationship('Team', back_populates='created_by_user')
     goals_created = db.relationship('Goal', back_populates='user')
     task_templates = db.relationship('TaskTemplate', back_populates='user')
@@ -104,8 +104,8 @@ class Task(db.Model):
     repeat_cycle = db.Column(db.String(50), nullable=True)
     completed = db.Column(db.Boolean, default=False)
     template_id = db.Column(db.Integer, db.ForeignKey('task_templates.template_id'))
-    reminder_24h_sent = db.Column(db.Boolean, default=False)
-    reminder_12h_sent = db.Column(db.Boolean, default=False)
+    reminder_24h_sent = db.Column(db.Boolean, default=False) # reminder sent 24h before the task
+    reminder_12h_sent = db.Column(db.Boolean, default=False) # reminder sent 12h before the task
     depends_on_task_id = db.Column(db.Integer, db.ForeignKey('tasks.task_id'))
 
     category = db.relationship('Category', back_populates='tasks')
@@ -117,11 +117,11 @@ class GoalTemplate(db.Model):
 
     template_id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    team_id = db.Column(db.Integer, db.ForeignKey('teams.team_id'))
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
+    categories = db.Column(db.String(255), nullable=True)
+    create_time = db.Column(db.DateTime, default=datetime.now(timezone.utc).replace(tzinfo=None))
 
-    team = db.relationship('Team')
     user = db.relationship('User')
 
 
@@ -130,13 +130,13 @@ class UserPointsHistory(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    task_id = db.Column(db.Integer, db.ForeignKey('tasks.task_id'))
     points = db.Column(db.Integer, nullable=False)
-    category = db.Column(db.String(50), nullable=True)
     description = db.Column(db.Text, nullable=True)
     earned_at = db.Column(db.DateTime, default=datetime.now(timezone.utc).replace(tzinfo=None))
 
     user = db.relationship('User', back_populates='points_history')
-
+    task = db.relationship('Task', back_populates='points_history')
 
 class TaskTemplate(db.Model):
     __tablename__ = 'task_templates'
@@ -151,7 +151,7 @@ class TaskTemplate(db.Model):
     user = db.relationship('User', back_populates='task_templates')
 
 
-class PomodoroSession(db.Model):
+class PomodoroSession(db.Model): # each session is a pomodoro or a break 
     __tablename__ = 'pomodoro_sessions'
 
     session_id = db.Column(db.Integer, primary_key=True)
