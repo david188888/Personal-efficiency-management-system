@@ -1,5 +1,5 @@
 import os
-from password import username, password
+from backend.password import username, password
 
 
 class Config:
