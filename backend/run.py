@@ -1,13 +1,47 @@
 from flask import Blueprint, request, jsonify
+from model import *
 
 bp = Blueprint('api', __name__)
 
 
-@bp.route('/api/goals', methods=['POST'])
+@bp.route('/api/goals/', methods=['POST'])
 def add_goal():
-    title = request.json.get('title')
-    description = request.json.get('description')
-    return jsonify({"message": "Goal added", "goal": {"title": title, "description": description}}), 201
+    data = request.json
+    title = data.get('title')
+    description = data.get('description', '')
+    user_id = int(data.get('user_id', None)) if data.get('user_id') is not None else None
+    print(type(user_id))
+    start_date = data.get('start_date', None)  # 如果没有提供，则为 None
+    end_date = data.get('end_date', None)  # 如果没有提供，则为 None
+    template_id = data.get('template_id', None)  # 如果没有提供，则为 None
+    team_id = data.get('team_id', None)  # 如果没有提供，则为 None
+    parent_goal_id = data.get('parent_goal_id', None)  # 如果没有提供，则为 None
+
+    # 创建新目标
+    new_goal = Goal(
+        title=title,
+        description=description,
+        user_id=1,
+    )
+    db.session.add(new_goal)
+    db.session.commit()
+
+    # # 返回新创建的目标
+    response = {
+        "message": "Goal added",
+        "goal": {
+            "title": new_goal.title,
+            "description": new_goal.description,
+            "user_id": new_goal.user_id,
+            "goal_id": new_goal.goal_id,
+            "start_date": new_goal.start_date.isoformat() if new_goal.start_date else None,
+            "end_date": new_goal.end_date.isoformat() if new_goal.end_date else None,
+            "template_id": new_goal.template_id,
+            "team_id": new_goal.team_id,
+            "parent_goal_id": new_goal.parent_goal_id
+        }
+    }
+    return jsonify(response), 201
 
 
 @bp.route('/api/goals', methods=['GET'])
@@ -17,7 +51,8 @@ def get_goals():
 
 @bp.route('/api/goals/<int:id>', methods=['GET'])
 def get_goal(id):
-    return jsonify({"goal": {"id": id}}), 200
+    response = {"goal": {"id": id}}
+    return jsonify(response), 200
 
 
 @bp.route('/api/templates/goals', methods=['GET'])

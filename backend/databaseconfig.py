@@ -1,7 +1,7 @@
 import os
-from backend.password import username, password
+from password import username, password
 
 
-class Config:
+class DataBaseConfig:
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', f'mysql://{username}:{password}@localhost:3306/taskmanage')
     SQLALCHEMY_TRACK_MODIFICATIONS = False

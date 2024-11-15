@@ -1,13 +1,14 @@
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timezone
 
-
 db = SQLAlchemy()
+
 
 def db_drop_and_create_all(app):
     with app.app_context():
         db.drop_all()
         db.create_all()
+
 
 class User(db.Model):
     __tablename__ = 'users'
@@ -17,8 +18,9 @@ class User(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     email = db.Column(db.String(100), nullable=False)
     registration_date = db.Column(db.DateTime, default=datetime.now(timezone.utc).replace(tzinfo=None))
-    points = db.Column(db.Integer, default=0) # total points earned by the user
-    level_id = db.Column(db.Integer, db.ForeignKey('levels.level_id')) # current level of the user
+    points = db.Column(db.Integer, default=0)  # total points earned by the user
+
+    level_id = db.Column(db.Integer, db.ForeignKey('levels.level_id'))  # current level of the user
 
     levels = db.relationship('Level', back_populates='user')
     teams_created = db.relationship('Team', back_populates='created_by_user')
@@ -38,7 +40,7 @@ class Level(db.Model):
     max_points = db.Column(db.Integer)
     description = db.Column(db.String(255))
 
-    users = db.relationship('User', back_populates='levels')
+    user = db.relationship('User', back_populates='levels')
 
 
 class Team(db.Model):
@@ -47,6 +49,7 @@ class Team(db.Model):
     team_id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     description = db.Column(db.Text, nullable=True)
+
     created_by_user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     created_at = db.Column(db.DateTime, default=datetime.now(timezone.utc).replace(tzinfo=None))
 
@@ -77,10 +80,11 @@ class Goal(db.Model):
     end_date = db.Column(db.DateTime, nullable=True)
     progress_percentage = db.Column(db.Float, default=0.0)
     points_earned = db.Column(db.Integer, default=0)
-    parent_goal_id = db.Column(db.Integer, db.ForeignKey('goals.goal_id'))
-    template_id = db.Column(db.Integer, db.ForeignKey('goal_templates.template_id'))
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    team_id = db.Column(db.Integer, db.ForeignKey('teams.team_id'))
+
+    parent_goal_id = db.Column(db.Integer, db.ForeignKey('goals.goal_id'), nullable=True)
+    template_id = db.Column(db.Integer, db.ForeignKey('goal_templates.template_id'), nullable=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=True)
+    team_id = db.Column(db.Integer, db.ForeignKey('teams.team_id'), nullable=True)
 
     subgoals = db.relationship('Goal', backref=db.backref('parent_goal', remote_side=[goal_id]))
     user = db.relationship('User', back_populates='goals_created')
@@ -104,10 +108,11 @@ class Task(db.Model):
     repeat_cycle = db.Column(db.String(50), nullable=True)
     completed = db.Column(db.Boolean, default=False)
     template_id = db.Column(db.Integer, db.ForeignKey('task_templates.template_id'))
-    reminder_24h_sent = db.Column(db.Boolean, default=False) # reminder sent 24h before the task
-    reminder_12h_sent = db.Column(db.Boolean, default=False) # reminder sent 12h before the task
+    reminder_24h_sent = db.Column(db.Boolean, default=False)  # reminder sent 24h before the task
+    reminder_12h_sent = db.Column(db.Boolean, default=False)  # reminder sent 12h before the task
     depends_on_task_id = db.Column(db.Integer, db.ForeignKey('tasks.task_id'))
 
+    points_history = db.relationship('UserPointsHistory', back_populates='task')
     category = db.relationship('Category', back_populates='tasks')
     dependencies = db.relationship('Task', backref=db.backref('depends_on_task', remote_side=[task_id]))
 
@@ -138,6 +143,7 @@ class UserPointsHistory(db.Model):
     user = db.relationship('User', back_populates='points_history')
     task = db.relationship('Task', back_populates='points_history')
 
+
 class TaskTemplate(db.Model):
     __tablename__ = 'task_templates'
 
@@ -151,7 +157,7 @@ class TaskTemplate(db.Model):
     user = db.relationship('User', back_populates='task_templates')
 
 
-class PomodoroSession(db.Model): # each session is a pomodoro or a break 
+class PomodoroSession(db.Model):  # each session is a pomodoro or a break
     __tablename__ = 'pomodoro_sessions'
 
     session_id = db.Column(db.Integer, primary_key=True)
