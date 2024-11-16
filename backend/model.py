@@ -90,6 +90,18 @@ class Goal(db.Model):
     user = db.relationship('User', back_populates='goals_created')
     team = db.relationship('Team', back_populates='goals')
 
+class GoalTemplate(db.Model):
+    __tablename__ = 'goal_templates'
+
+    template_id = db.Column(db.Integer, primary_key=True)
+
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, nullable=True)
+    categories = db.Column(db.String(255), nullable=True)
+    create_time = db.Column(db.DateTime, default=datetime.now(timezone.utc).replace(tzinfo=None),nullable=True)
+    structure = db.Column(db.Text, nullable=True)  # 格式化目标
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'),nullable=True)
+    user = db.relationship('User')
 
 class Task(db.Model):
     __tablename__ = 'tasks'
@@ -117,17 +129,7 @@ class Task(db.Model):
     dependencies = db.relationship('Task', backref=db.backref('depends_on_task', remote_side=[task_id]))
 
 
-class GoalTemplate(db.Model):
-    __tablename__ = 'goal_templates'
 
-    template_id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text, nullable=True)
-    categories = db.Column(db.String(255), nullable=True)
-    create_time = db.Column(db.DateTime, default=datetime.now(timezone.utc).replace(tzinfo=None))
-
-    user = db.relationship('User')
 
 
 class UserPointsHistory(db.Model):
