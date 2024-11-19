@@ -135,8 +135,8 @@ def delete_goals(id):
         return jsonify(message), 404
 
 
-@bp.route('/api/get_goal_templates/<int:id>', methods=['GET'])
-def get_goal_templates(id):
+@bp.route('/api/get_goal_template/<int:id>', methods=['GET'])
+def get_goal_template(id):
     template_id = int(id)
     template = GoalTemplate.query.get(template_id)
     if not template:
@@ -149,9 +149,12 @@ def get_goal_templates(id):
             'description': template.description,
             'categories': template.categories,
             'create_time': template.create_time,
-            'user_id': template.id,
+            'user_id': template.user_id,
+            'template_id': template.template_id
         }
-        if not structure and structure != '':
+        if structure and structure != '':
+            # fake_data
+            # structure = "{\"goal\": {\"title\": \"1\", \"description\": \"1\"}, \"sub_goals\": [{\"title\": \"2\", \"description\": \"2\"}]}"
             structure_data = json.loads(structure)
             goal = structure_data['goal']
             sub_goals = structure_data['sub_goals']
@@ -160,9 +163,59 @@ def get_goal_templates(id):
     return jsonify({"templates": template}), 200
 
 
-@bp.route('/api/goals/<int:id>/progress', methods=['GET'])
+@bp.route('/api/delete_goal_template/<int:id>', methods=['GET'])
+def delete_goal_template(id):
+    goal_templates_id = id
+    goal_templates = GoalTemplate.query.get(goal_templates_id)
+    if goal_templates:
+        db.session.delete(goal_templates)
+        db.session.commit()
+        message = 'Goal Templates Deleted'
+        return jsonify(message), 201
+    else:
+        message = 'Goal Templates Not Found'
+        return jsonify(message), 404
+
+
+# 不能修改
+@bp.route('/api/save_goal_template', methods=['POST'])
+def sava_goal_template():
+    data = request.json
+    name = data.get('name', '')
+    description = data.get('description', '')
+    categories = data.get('categories', '')
+    structure = data.get('structure', None)
+    user_id = int(data.get('user_id', None)) if data.get('user_id') is not None else None
+    message = ''
+    try:
+        new_template = GoalTemplate(
+            name=name,
+            description=description,
+            categories=categories,
+            structure=structure,
+            user_id=user_id,
+        )
+        db.session.add(new_template)
+        db.session.commit()
+        message = 'Goal Template Saved'
+    except IntegrityError as e:
+        db.session.rollback()
+        error_message = str(e)
+        if 'user_id' in error_message:
+            message = 'Invalid foreign key for user_id'
+    return jsonify({'message': message}), 201
+
+
+@bp.route('/api/get_goal_progress/<int:id>', methods=['GET'])
 def get_goal_progress(id):
-    return jsonify({"progress": {"id": id, "status": "In progress"}}), 200
+    goal_id = id
+    goal = Goal.query.get(goal_id)
+    message = ''
+    if goal:
+        message = goal.progress_percentage
+    else:
+        message = "Goal doesn't exist"
+    return jsonify({"message": message}), 200
 
 
 @bp.route('/api/goals/<int:id>/achievements', methods=['POST'])
