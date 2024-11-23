@@ -7,6 +7,26 @@ from sqlalchemy.exc import IntegrityError
 bp = Blueprint('api', __name__)
 
 
+@bp.route('/api/users/add_user', methods=['POST'])
+def add_user():
+    data = request.json
+    username = data.get('username', '')
+    password = data.get('password', '')
+    email = data.get('email', '')
+    level_id = int(data.get('level_id', None)) if data.get('level_id') is not None else None
+    new_user = User(
+        username=username,
+        password_hash=password,
+        email=email,
+        level_id=level_id
+    )
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({'message': 'User created'}), 201
+
+
+
+
 @bp.route('/api/goals/add_change_goal', methods=['POST'])
 def add_change_goal():
     data = request.json
@@ -271,6 +291,7 @@ def add_change_task():
             db.session.rollback()
             error_message = str(e)
             if 'goal_id' in error_message:
+                print(error_message)
                 message = 'Invalid foreign key for goal_id'
             elif 'category_id' in error_message:
                 message = 'Invalid foreign key for category_id'
@@ -325,6 +346,7 @@ def get_tasks():
             'expected_completion_time': task.expected_completion_time.isoformat() if task.expected_completion_time else None,
             'priority': task.priority,
             'point': task.point,
+            'category_id': task.category_id,
             'repeat_cycle': task.repeat_cycle,
             'completed': task.completed,
             'front_task_id': task.front_task_id
@@ -376,6 +398,25 @@ def get_task_template(id):
         return jsonify({"message": 'Task Template found', 'task_template': task_template_object}), 200
     return jsonify({'message': "Task Template doesn't found"}), 404
 
+
+@bp.route('/api/categories/add', methods=['POST'])
+def add_category():
+    data = request.json
+    name = data.get('name', '')
+    description = data.get('description', '')
+
+    if not name:
+        return jsonify({"message": "Name is required"}), 400
+
+    new_category = Category(name=name, description=description)
+
+    try:
+        db.session.add(new_category)
+        db.session.commit()
+        return jsonify({"message": "Category created", "category": {"id": new_category.category_id, "name": new_category.name, "description": new_category.description}}), 201
+    except IntegrityError:
+        db.session.rollback()
+        return jsonify({"message": "Error creating category"}), 500
 
 @bp.route('/api/tasks/save_task_template', methods=['POST'])
 def save_task_template():
@@ -583,3 +624,154 @@ def end_task_timer(id):
     pomodoro_session.remaining_time = 0
     db.session.commit()
     return jsonify({"message": 'Timer end'}), 200
+
+
+
+# 在某一个日期范围内（以start_time 或end_time为区间）内搜索所有任务
+
+@bp.route('/api/tasks/time_management', methods=['GET'])
+def time_management():
+    start_time = request.args.get('start_time')
+    end_time = request.args.get('end_time')
+    
+    start_time = datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%S')
+    end_time = datetime.strptime(end_time, '%Y-%m-%dT%H:%M:%S')
+    
+    tasks = Task.query.filter(Task.start_time.between(start_time, end_time) | Task.end_time.between(start_time, end_time)).all()
+    #计算每个任务在指定时间范围内的总工作时间的占比
+    
+    task_duration = {}
+    total_duration = 0
+    
+    for task in tasks:
+        actual_start_time = task.start_time if task.start_time > start_time else start_time
+        actual_end_time = task.end_time if task.end_time < end_time else end_time
+        
+        duration = (actual_end_time - actual_start_time).total_seconds()
+        total_duration += duration
+
+        task_id = task.task_id
+        if task_id not in task_duration:
+            task_duration[task_id] = 0
+        task_duration[task_id] += duration
+        
+        
+        
+    # 计算每个任务和每个类别的时间占比
+    result = []
+    for key, duration in task_duration.items():
+        rate = duration / total_duration * 100 if total_duration > 0 else 0
+        result.append({
+            'task_id': key,
+            'task_name': Task.query.get(key).title,
+            'total_work_time': duration,
+            'category': Category.query.get(Task.query.get(key).category_id).name if Task.query.get(key).category_id else None,
+            'rate': rate,
+        })
+    try:
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+    
+    
+#团队协作，创建团队，插入Teams 和 TeamMembers表
+@bp.route('/api/teams/add_team', methods=['POST'])
+def add_team():
+    data = request.json
+    name = data.get('team_name', '')
+    description = data.get('description', '') if data.get('description') else ''
+    leader_id = int(data.get('created_by_user_id', None)) if data.get('leader_id') else None
+    
+    members = data.get('members', {})
+    if not name:
+        return jsonify({'message': 'Team name is required'}), 400
+    new_team = Team(
+        name=name,
+        description=description,
+        created_by_user_id=leader_id
+    )
+    db.session.add(new_team)
+    db.session.commit()
+    
+    for member_id, role in members.items():
+        new_member = TeamMember(
+            team_id=new_team.team_id,
+            user_id=int(member_id) if member_id else None,
+            role=role if role else 'member'
+        )
+        db.session.add(new_member)
+        db.session.commit()
+        
+        
+    members_name = [User.query.get(member_id).username for member_id in members.keys()]
+        
+    result = {
+        'team_id': new_team.team_id,
+        'team_name': new_team.name,
+        'description': new_team.description,
+        'members': members_name
+    }
+    
+    # 返回新创建的团队信息和正确的状态码还有消息
+    return jsonify({'message': 'Team created', 'team': result}), 201
+
+
+# 获取团队详情和任务
+@bp.route('/api/teams/get_team', methods=['GET'])
+def get_team():
+    team_id = request.args.get('team_id')
+    team = Team.query.get(team_id)
+    if not team:
+        return jsonify({'message': 'Team not found'}), 404
+    team_members = TeamMember.query.filter_by(team_id=team_id).all()
+    members = []
+    for member in team_members:
+        user = User.query.get(member.user_id)
+        members.append({
+            'user_id': user.user_id,
+            'username': user.username,
+            'role': member.role,
+            'joined_at': member.joined_at
+        })
+    goals = Goal.query.filter_by(team_id=team_id).all() if team_id else None
+    if not goals:
+        result = {
+            'team_id': team.team_id,
+            'team_name': team.name,
+            'description': team.description,
+            'members': members,
+        }
+        return jsonify({'message': 'there is no goals for the team','result':result}), 200
+    goals_list = []
+    for goal in goals:
+        goal_object = {
+            'title': goal.title,
+            'progress_percentage': goal.progress_percentage
+        }
+        goals_list.append(goal_object)
+        
+    
+    result = {
+        'team_id': team.team_id,
+        'team_name': team.name,
+        'description': team.description,
+        'members': members,
+        'goals': goals_list
+    }
+    return jsonify(result), 200
+
+
+# 删除团队
+@bp.route('/api/teams/delete_team', methods=['GET'])
+def delete_team():
+    team_id = request.args.get('team_id')
+    team = Team.query.get(team_id)
+    if not team:
+        return jsonify({'message': 'Team not found'}), 404
+    else:
+        db.session.delete(team)
+        db.session.commit()
+        return jsonify({'message': 'Team deleted'}), 200
+
+
