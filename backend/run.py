@@ -22,7 +22,30 @@ def add_user():
     )
     db.session.add(new_user)
     db.session.commit()
-    return jsonify({'message': 'User created'}), 201
+    # 返回新创建的用户信息和正确的状态码还有消息\
+    result = {
+        'user_id': new_user.user_id,
+        'username': new_user.username,
+        'email': new_user.email,
+        'level': new_user.level_id
+    }
+    return jsonify({'message': 'User created', 'user': result}), 201
+
+@bp.route('/api/users/get_user', methods=['GET'])
+def get_user():
+    user_id = request.args.get('user_id')
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({'message': 'User not found'}), 404
+    result = {
+        'user_id': user.user_id,
+        'username': user.username,
+        'email': user.email,
+        'level': user.level_id
+    }
+    return jsonify(result), 200
+
+
 
 
 
