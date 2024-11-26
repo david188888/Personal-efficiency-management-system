@@ -68,3 +68,5 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+# Personal-efficiency-management-system
+Develop a comprehensive personal efficiency management system website, covering core functional modules such as goal management, task management, time management, and feedback and evaluation. Aimed at solving many existing problems of individuals in efficiency management
