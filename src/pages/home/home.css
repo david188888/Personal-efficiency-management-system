@@ -1,0 +1,81 @@
+.home img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    margin-right: 30px;
+}
+
+.home .name {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+.home .user {
+    display: flex;
+    align-items: center;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom:1px solid #ccc;
+}
+
+.home .login-info p{
+    line-height: 28px;
+    font-size: 14px;
+    color: #999999;
+}
+
+.home .login-info p span{
+    color: #666666;
+    margin-left: 60px;
+}
+
+.home .num {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+
+.home .num .ant-card {
+    width: 33%;
+    margin-bottom: 20px;
+}
+.home .icon-box {
+    width: 80px;
+    height: 80px;
+    text-align: center;
+    line-height: 85px;
+    color: #fff;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+.home .num .ant-card-body {
+    display: flex;
+    padding: 10px 25px;
+}
+
+.home .num .icon {
+    font-size: 30px;
+    width: 80px;
+    height: 80px;
+    text-align: center;
+    line-height: 80px;
+    color: #fff;
+}
+.home .anticon {
+    font-size:40px;
+}
+.home .num .detail {
+    margin-left: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.home .num .detail .num {
+    font-size: 30px;
+    margin-bottom: 10px;
+}
+
+.home .graph {
+    display: flex;
+    margin-top: 20px;
+}
