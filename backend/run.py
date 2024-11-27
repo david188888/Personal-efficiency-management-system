@@ -46,6 +46,21 @@ def get_user():
     return jsonify(result), 200
 
 
+@bp.route('/api/users/get_all_users', methods=['GET'])
+def get_all_users():
+    users = User.query.all()
+    result = []
+    for user in users:
+        result.append({
+            'user_id': user.user_id,
+            'username': user.username,
+            'password': user.password_hash,
+            'email': user.email,
+            'level': user.level_id
+        })
+    return jsonify(result), 200
+
+
 
 
 
