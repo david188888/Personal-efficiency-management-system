@@ -10,15 +10,16 @@ from config import Config
 from model import db, db_drop_and_create_all
 from run import bp
 from flask_migrate import Migrate
-
+from flask_cors import CORS
 
 
 app = Flask(__name__)
+CORS(app, resources={r"/api/*": {"origins": "*"}})  # 允许来自任何域的跨域请求
 app.register_blueprint(bp)
 app.config.from_object(Config)
 db.init_app(app)
 migrate = Migrate(app, db)
-# db_drop_and_create_all(app)
+# db_drop_and_create_all(app) 
 
 
 

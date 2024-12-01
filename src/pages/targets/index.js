@@ -15,6 +15,7 @@ import './target.css'
 import { getUser, addUser, editUser, deleteUser } from '../../api'
 import { useForm } from 'antd/es/form/Form'
 import dayjs from 'dayjs'
+import axios from 'axios'
 import { render } from '@testing-library/react'
 
 const User = () => {
@@ -143,34 +144,78 @@ const User = () => {
         
     }
       // 关闭弹窗
-      const handleCancel = () => {
-        setIsModalOpen(false)
-        form.resetFields() // 清除已提交、删除的填写字段
-      }
+    //   const handleCancel = () => {
+    //     setIsModalOpen(false)
+    //     form.resetFields() // 清除已提交、删除的填写字段
+    //   }
       // 点击确认的事件处理
-      const handleOk = () => {
-        form.validateFields().then((val) => {
-          // 日期参数
-          val.birth = dayjs(val.birth).format('YYYY-MM-DD')
-          if (modelType) { // 编辑
-            console.log(val,'val')
-            editUser(val).then(() => {
-              // 比新增多传一个id 因要先找到更新哪个用户 在弹窗中一起提交 添加id提交后的val会多出一个id字段供后端识别
-              // 关闭弹窗
-              handleCancel()
-              getTableData()
-            })
-          } else { // 新增
-            addUser(val).then(() => {
-              // 关闭弹窗
-              handleCancel()
-              getTableData() // 更新列表数据
-            })
-          }
-        }).catch((err) => { 
-          console.log(err)
-        })
-      }
+      const handleOk = async () => {
+        try {
+          const values = await form.validateFields();
+          //日期参数
+          values.title = '标题'
+          values.description = '描述'
+          values.start_date = dayjs(values.start_date).format('YYYY-MM-DDTHH:mm:ss') ;
+          values.end_date = dayjs(values.end_date).format('YYYY-MM-DDTHH:mm:ss') ;
+          values.user_id = 2; // 假设你有一个固定的user_id
+          values.team_id = 2; // 假设你有一个固定的team_id
+          values.is_root = true; // 假设你有一个固定的is_root值
+        //   const values = {
+        //     title: "管理",
+        //     description: "chenggong",
+        //     user_id: null,
+        //     start_date: "2024-01-11T08:00:00",
+        //     end_date: "2024-01-13T08:00:00",
+        //     team_id: null,
+        //     parent_goal_id: null,
+        //     is_root: true
+        // };
+          console.log('表单数据',values)
+        
+         await addChangeGoal(values);
+          
+      
+          // 关闭弹窗并更新列表数据
+          handleCancel();
+          getGoals();
+        } catch (err) {
+          console.error('Validation or API call failed:', err);
+        }
+      };
+      
+      // 取消按钮点击事件处理
+      const handleCancel = () => {
+        setIsModalOpen(false);
+        form.resetFields(); // 清除已提交、删除的填写字段
+      };
+
+      const baseUrl = 'http://127.0.0.1:8080'
+      
+      // 定义addChangeGoal函数
+      const addChangeGoal = async (data) => {
+        const url = baseUrl+'/api/goals/add_change_goal';
+        try {
+            const response = await axios.post(url, data);
+            console.log('服务器响应:', response);
+        } catch (error) {
+            console.error('Error adding/updating goal:', error.response ? error.response.data : error.message);
+            throw error; // 重新抛出错误，以便外部处理
+        }
+    };
+    
+    const getGoals = async () => {
+        const url = baseUrl+'/api/goals/get_goals';
+        try {
+            const response = await axios.get(url);
+            console.log('Goals返回', response.data);
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching goals:', error.response ? error.response.data : error.message);
+            throw error; // 重新抛出错误，以便外部处理
+        }
+    };
+    
+    
 
     
 
@@ -236,7 +281,7 @@ const User = () => {
 
     {modelType === 1 && <Form.Item label='ID' name='id'><Input /></Form.Item>}
 
-    <Form.Item label='Target name' name='target_name'
+    <Form.Item label='Target name' name='title'
         rules={[
             {
                 required: true,

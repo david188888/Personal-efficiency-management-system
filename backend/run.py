@@ -33,18 +33,29 @@ def add_user():
 
 @bp.route('/api/users/get_user', methods=['GET'])
 def get_user():
-    user_id = request.args.get('user_id')
-    user = User.query.get(user_id)
-    if not user:
-        return jsonify({'message': 'User not found'}), 404
-    result = {
-        'user_id': user.user_id,
-        'username': user.username,
-        'email': user.email,
-        'level': user.level_id
-    }
-    return jsonify(result), 200
+    username = request.args.get('username')
+    password = request.args.get('password')
 
+    if not username or not password:
+        return jsonify({'message': 'Missing username or password'}), 400
+
+    user = User.query.filter_by(username=username).first()
+
+    if user and user.password_hash == password:  # 直接比较明文密码
+        return jsonify({'message': 'Login successful', 'user_id': user.user_id}), 200
+    else:
+        return jsonify({'message': 'Invalid username or password'}), 401
+    # user_id = request.args.get('user_id')
+    #     user = User.query.get(user_id)
+    #     if not user:
+    #         return jsonify({'message': 'User not found'}), 404
+    #     result = {
+    #         'user_id': user.user_id,
+    #         'username': user.username,
+    #         'email': user.email,
+    #         'level': user.level_id
+    #     }
+    #     return jsonify(result), 200
 
 
 
@@ -110,12 +121,14 @@ def add_change_goal():
         except IntegrityError as e:
             db.session.rollback()
             error_message = str(e)
+            print(f"IntegrityError: {error_message}")
             if 'team_id' in error_message:
                 message = 'Invalid foreign key for team_id'
             if 'parent_goal_id' in error_message:
                 message = 'Invalid foreign key for parent_goal_id'
             if 'user_id' in error_message:
                 message = 'Invalid foreign key for user_id'
+          
     return jsonify({'message': message}), 201
 
 
