@@ -11,7 +11,7 @@ Mock.mock(/home\/getData/,homeApi.getStatisticalData)
 Mock.mock(/user\/getUser/,userApi.getTaskList)
 
 // 新增用户
-Mock.mock(/user\/addeUser/,'post',userApi.createTask)
+Mock.mock(/user\/addUser/,'post',userApi.createTask)
 // 编辑用户
 Mock.mock(/user\/editUser/,'post',userApi.updateTask)
  
