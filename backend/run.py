@@ -76,7 +76,7 @@ def add_change_goal():
     team_id = int(data.get('team_id', None)) if data.get('team_id') is not None else None
     parent_goal_id = int(data.get('parent_goal_id', None)) if data.get('parent_goal_id') is not None else None
     goal_id = int(data.get('goal_id', None)) if data.get('goal_id') is not None else None
-    goal = Goal.query.get(goal_id, None)
+    goal = Goal.query.get(goal_id)
     is_root = bool(data.get('is_root', False)) if data.get('is_root') is not None else None
     message = ''
 
