@@ -89,6 +89,9 @@ def add_change_goal():
     goal_id = int(data.get('goal_id', None)) if data.get('goal_id') is not None else None
     goal = Goal.query.get(goal_id)
     is_root = bool(data.get('is_root', False)) if data.get('is_root') is not None else None
+    category=int(data.get('category',None))if data.get('category') is not None else None
+    status=int(data.get('status',None)) if data.get('status') is not None else None
+    progress=int(data.get('progress',None)) if data.get('progress') is not None else None
     message = ''
 
     if goal:
@@ -99,6 +102,9 @@ def add_change_goal():
             goal.end_date = end_date
             goal.user_id = user_id
             goal.team_id = team_id
+            goal.category=category
+            goal.status=status
+            goal.progress=progress
             goal.parent_goal_id = parent_goal_id
             db.session.commit()
             message = 'Goal Updated'
@@ -122,7 +128,10 @@ def add_change_goal():
                 end_date=end_date,
                 team_id=team_id,
                 parent_goal_id=parent_goal_id,
-                is_root=is_root
+                is_root=is_root,
+                status=status,
+                progress=progress,
+                category=category,
             )
             db.session.add(new_goal)
             db.session.commit()
@@ -158,6 +167,9 @@ def get_goals():
             'end_date': goal.end_date.isoformat() if goal.end_date else None,
             'team_id': goal.team_id,
             'parent_goal_id': goal.parent_goal_id,
+            'status':goal.status,
+            'category':goal.category,
+            'progress':goal.progress,
             'sub_goals': []
         }
         sub_goals_list = goal.sub_goals
