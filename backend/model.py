@@ -84,11 +84,15 @@ class Goal(db.Model):
     parent_goal_id = db.Column(db.Integer, db.ForeignKey('goals.goal_id'), nullable=True)
     team_id = db.Column(db.Integer, db.ForeignKey('teams.team_id'), nullable=True)
     is_root = db.Column(db.Boolean, default=False)
+    category=db.Column(db.Integer,nullable=True)
+    status=db.Column(db.Integer,nullable=True)
+    progress=db.Column(db.Integer,nullable=True)
     root_goal_id = db.Column(db.Integer, db.ForeignKey('goals.goal_id'), nullable=True)
     sub_goals = db.relationship('Goal', backref=db.backref('parent_goal', remote_side=[goal_id]),foreign_keys=[parent_goal_id])
     user = db.relationship('User', back_populates='goals')
     tasks = db.relationship('Task',back_populates='goal')
     team = db.relationship('Team', back_populates='goals')
+
     __table_args__ = (
         ForeignKeyConstraint(['parent_goal_id'], ['goals.goal_id'], ondelete='CASCADE'),
     )
