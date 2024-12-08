@@ -1,11 +1,126 @@
-import React from "react";
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { Form, Input, Select, Button, Space } from 'antd';
+import './clock.css'
 
-const Mall = () => {
-    return (
-        <div>
-            <h1>Clock</h1>
-        </div>
-    )
-}
+const { Option } = Select;
 
-export default Mall;
+const CountdownTimer = () => {
+  const [remainingTime, setRemainingTime] = useState(0);
+  const [endTime, setEndTime] = useState(null);
+  const [stopBtnClicked, setStopBtnClicked] = useState(false);
+  const [isStopButtonDisabled, setIsStopButtonDisabled] = useState(true);
+  const [isResetButtonDisabled, setIsResetButtonDisabled] = useState(true);
+  const countDown = useRef(null);
+  const intervalRef = useRef(null);
+
+  const formatTime = (secondsLeft) => {
+    let hours = Math.floor(secondsLeft / 3600);
+    let minutes = Math.floor(secondsLeft / 60) - (hours * 60);
+    let seconds = secondsLeft % 60;
+
+    if (hours < 10) hours = `0${hours}`;
+    if (minutes < 10) minutes = `0${minutes}`;
+    if (seconds < 10) seconds = `0${seconds}`;
+
+    return `${hours} : ${minutes} : ${seconds}`;
+  };
+
+  const setCountDown = useCallback(() => {
+    const now = Date.now();
+    const secondsLeft = Math.round((endTime - now) / 1000);
+
+    if (secondsLeft < 0) {
+      resetCountDown();
+      return;
+    }
+
+    countDown.current.innerHTML = formatTime(secondsLeft);
+    setRemainingTime(secondsLeft); // 更新剩余时间
+  }, [endTime, formatTime]);
+
+  const resetCountDown = useCallback(() => {
+    clearInterval(intervalRef.current);
+    countDown.current.innerHTML = '00 : 00 : 00';
+    setEndTime(null);
+    setStopBtnClicked(false);
+    setIsStopButtonDisabled(true);
+    setIsResetButtonDisabled(true);
+  }, []);
+
+  const handleFinish = (values) => {
+    const time = parseInt(values.countDownTime, 10);
+    if (isNaN(time)) {
+      alert('Please enter a valid number');
+      return;
+    }
+
+    const timeInMs = time * ({ hours: 3600000, minutes: 60000, seconds: 1000 }[values.format]);
+    if (!timeInMs) {
+      alert('Invalid format');
+      return;
+    }
+
+    setEndTime(Date.now() + timeInMs + 1000); // 加上1000毫秒以补偿setInterval的延迟
+    setIsStopButtonDisabled(false);
+    setIsResetButtonDisabled(true);
+  };
+
+  const handleStopClick = () => {
+    setStopBtnClicked((prev) => {
+      // 如果当前是暂停状态，则继续计时
+      if (prev) {
+        // 设置新的结束时间，保持剩余时间不变
+        setEndTime(Date.now() + remainingTime * 1000);
+      }
+      return !prev;
+    });
+    setIsResetButtonDisabled(false);
+  };
+
+  useEffect(() => {
+    if (endTime && !stopBtnClicked) {
+      intervalRef.current = setInterval(setCountDown, 1000);
+    } else {
+      clearInterval(intervalRef.current);
+    }
+    return () => clearInterval(intervalRef.current); // 组件卸载时清除计时器
+  }, [endTime, stopBtnClicked, setCountDown]);
+
+  return (
+    <div className="container">
+      <Form className="form" onFinish={handleFinish}>
+        <Space size={16}>
+        <Form.Item name="countDownTime" rules={[{ required: true, message: 'Please input the countdown time!' }]}>
+          <Input type="number" min="1" placeholder="Enter Countdown" />
+        </Form.Item>
+        <Form.Item name="format" rules={[{ required: true, message: 'Please select the time format!' }]}>
+          <Select placeholder="Select time format"  >
+            <Option value="hours">Hours</Option>
+            <Option value="minutes">Minutes</Option>
+            <Option value="seconds">Seconds</Option>
+          </Select>
+        </Form.Item>
+        <Form.Item>
+          <Button type="primary" htmlType="submit">
+            SET
+          </Button>
+        </Form.Item>
+        </Space>
+      </Form>
+      <p className="countdown" ref={countDown}>00 : 00 : 00</p>
+      <div className="buttons">
+        <Button className="stop-btn" type="default" onClick={handleStopClick} disabled={isStopButtonDisabled}>
+        {stopBtnClicked ? 'REPLAY' : 'STOP'}
+        </Button>
+        <Button className="reset-btn" type="default" onClick={resetCountDown} disabled={isResetButtonDisabled}>
+          RESET
+        </Button>
+      </div>
+    </div>
+  );
+};
+
+export default CountdownTimer;
+
+
+
