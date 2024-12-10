@@ -129,7 +129,6 @@ def add_change_goal():
                 end_date=end_date,
                 team_id=team_id,
                 parent_goal_id=parent_goal_id,
-                is_root=is_root,
                 status=status,
                 progress=progress,
                 category=category,
@@ -137,9 +136,6 @@ def add_change_goal():
             db.session.add(new_goal)
             db.session.commit()
             message = 'Goal Created'
-            if is_root:
-                new_goal.root_goal_id = new_goal.goal_id
-                db.session.commit()
         except IntegrityError as e:
             db.session.rollback()
             error_message = str(e)
@@ -156,7 +152,7 @@ def add_change_goal():
 
 @bp.route('/api/goals/get_goals', methods=['GET'])
 def get_goals():
-    goals_list = Goal.query.filter_by(is_root=True)
+    goals_list = Goal.query.filter_by(parent_goal_id=None)
 
     def build_goal_tree(goal):
         goal_object = {
@@ -188,6 +184,7 @@ def delete_goals(id):
     goal_id = id
     goal = Goal.query.get(goal_id)
     sub_goals_list = goal.sub_goals
+    print(sub_goals_list)
     if goal:
         for sub_goal in sub_goals_list:
             db.session.delete(sub_goal)
