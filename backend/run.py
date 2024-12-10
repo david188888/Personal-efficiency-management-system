@@ -3,6 +3,7 @@ import json
 from flask import Blueprint, request, jsonify
 from model import *
 from sqlalchemy.exc import IntegrityError
+from datetime import datetime, timedelta
 
 bp = Blueprint('api', __name__)
 
@@ -734,6 +735,116 @@ def time_management():
         return jsonify(result), 200
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+
+
+# 该用户在最近的一周每天的任务数量和目标完成度
+@bp.route('/api/tasks/time_management_bar', methods=['GET'])
+def time_management_bar():
+    start_time = request.args.get('start_time') #这里的start_time和end_time 强制最近的一周就行了
+    end_time = request.args.get('end_time')
+    
+    start_time = datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%S')
+    end_time = datetime.strptime(end_time, '%Y-%m-%dT%H:%M:%S')
+    
+    tasks = Task.query.filter(
+        Task.start_time.between(start_time, end_time) | Task.end_time.between(start_time, end_time)).all()
+
+    goals = Goal.query.filter(
+        Goal.start_date.between(start_time, end_time) | Goal.end_date.between(start_time, end_time)).all()
+    
+    
+    
+    # 计算这一周每天的任务数量,并且计算每天的任务完成程度平均值
+    task_count = {}
+    goal_count = {}
+    
+    for task in tasks:
+        date = task.start_time.date()
+        
+        week_day = date.weekday()
+        #将这个数字转化为星期几
+        week_day = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][week_day]
+    
+        if week_day not in task_count:
+            task_count[week_day] = 1
+        task_count[week_day] += 1
+    
+    # 任务完成程度平均值
+    for goal in goals:
+        count = 0
+        date = goal.start_date.date()
+        week_day = date.weekday()
+        week_day = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][week_day]
+        if week_day not in goal_count:
+            goal_count[week_day] = goal.progress_percentage
+            count += 1
+        else:
+            goal_count[week_day] += goal.progress_percentage
+            count += 1
+        goal_count[week_day] = goal_count[week_day] / count
+        
+    
+    result = []
+    for week_day, count in task_count.items():
+        result.append({
+            'week_day': week_day,
+            'task_count': count,
+            'goal_progress': goal_count[week_day]
+        })
+
+    
+    try:
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+
+# 该用户每天工作时间的折线图
+@bp.route('/api/tasks/time_management_plot', methods=['GET'])
+def time_manage_plot():
+    start_time = request.args.get('start_time')
+    end_time = request.args.get('end_time')
+    
+    start_time = datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%S')
+    end_time = datetime.strptime(end_time, '%Y-%m-%dT%H:%M:%S')
+    
+    tasks = Task.query.filter(
+        Task.start_time.between(start_time, end_time) | Task.end_time.between(start_time, end_time)).all()
+    
+    total_duration = timedelta()
+    task_duration = {}
+
+    
+    for task in tasks:
+        actual_start_time = task.start_time 
+        actual_end_time = task.end_time
+        
+        duration = (actual_end_time - actual_start_time)
+        total_duration += duration
+        
+        date = actual_start_time.date()
+        if date not in task_duration:
+            task_duration[date] = timedelta(0)
+        task_duration[date] += duration
+        
+
+        
+    result = []
+    for date, duration in task_duration.items():
+        total_seconds = duration.total_seconds()
+        hours, remainder = divmod(total_seconds, 3600)
+        minutes, seconds = divmod(remainder, 60)
+        result.append({
+            'date': date,
+            'duration': f'{int(hours)}:{int(minutes)}:{int(seconds)}'
+        })
+    try:
+        return jsonify(result), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+    
+
 
 
 # 团队协作，创建团队，插入Teams 和 TeamMembers表
