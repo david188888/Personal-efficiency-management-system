@@ -40,15 +40,15 @@ const User = () => {
       // getTableData()
   }
 
-    useEffect(() => {
-      getTableData()
+  useEffect(() => {
+      getGoals()
       // console.log(listData)
     },[listData]) // 监听listData变化更新列表
     
     const columns = [
         {
             title:'Target name',
-            dataIndex:'target_name',
+            dataIndex:'title',
         },
         {
           title:'Start date',
@@ -74,9 +74,9 @@ const User = () => {
           title:'Status',
           dataIndex:'status',
           render:(val) =>{
-              if (val === 1) {
+              if (val === 0) {
                 return 'Doing';
-              } else if (val === 0) {
+              } else if (val === 1) {
                   return 'Done';
               }
               return 'Pending'
@@ -97,14 +97,14 @@ const User = () => {
                 return (
                     <div className='flex-box'>
                         <Button  type="primary" onClick={()=>{handleClick('edit',recordData)}}>Edit</Button>
-                        <Button style={{backgroundColor:'#FFA500'}} onClick={()=>{}}>Check</Button>
+                    
                         <Popconfirm 
                         title="Tip"
                         description="Mark the goal as achieved"
                         okText="Confirm"
                         cancelText="Cancel"
-                        onConfirm={() => {}}>
-                            <Button type="primary" style={{backgroundColor:'#86547a'}} onClick={()=>{}}>Done</Button>
+                        onConfirm={() => {handleFinish(recordData)}}>
+                            <Button type="primary" style={{backgroundColor:'#86547a'}} >Done</Button>
 
                         </Popconfirm>
                         <Popconfirm 
@@ -133,51 +133,45 @@ const User = () => {
             
             // 对原数据做深拷贝
             const cloneData = JSON.parse(JSON.stringify(recordData))
-            console.log('clone',cloneData)
+            
             // 对后端返回日期格式转换 到符合前端组件的格式
             cloneData.start_date = dayjs(cloneData.start_date)
             cloneData.end_date = dayjs(cloneData.end_date)
             setModelType(1)  // 走到编辑逻辑
+            console.log('clone',cloneData)
             //表单数据回填
             form.setFieldsValue(cloneData)
         }
         
     }
-      // 关闭弹窗
-    //   const handleCancel = () => {
-    //     setIsModalOpen(false)
-    //     form.resetFields() // 清除已提交、删除的填写字段
-    //   }
+      
       // 点击确认的事件处理
+
       const handleOk = async () => {
         try {
           const values = await form.validateFields();
+          
           //日期参数
-          values.title = '标题'
-          values.description = '描述'
+           
           values.start_date = dayjs(values.start_date).format('YYYY-MM-DDTHH:mm:ss') ;
           values.end_date = dayjs(values.end_date).format('YYYY-MM-DDTHH:mm:ss') ;
-          values.user_id = 2; // 假设你有一个固定的user_id
-          values.team_id = 2; // 假设你有一个固定的team_id
+          values.user_id = 1; // 假设你有一个固定的user_id
           values.is_root = true; // 假设你有一个固定的is_root值
-        //   const values = {
-        //     title: "管理",
-        //     description: "chenggong",
-        //     user_id: null,
-        //     start_date: "2024-01-11T08:00:00",
-        //     end_date: "2024-01-13T08:00:00",
-        //     team_id: null,
-        //     parent_goal_id: null,
-        //     is_root: true
-        // };
-          console.log('表单数据',values)
+          values.parent_goal_id = null; // 假设你有一个固定的parent_goal_id值
+          console.log('提交字段',values)
         
-         await addChangeGoal(values);
-          
-      
+        const url = baseUrl+'/api/goals/add_change_goal';
+        try {
+            const response = await axios.post(url, values);
+            console.log('服务器响应:', response);
+        } catch (error) {
+            console.error('Error adding/updating goal:', error.response ? error.response.data : error.message);
+            throw error; // 重新抛出错误
+        }
           // 关闭弹窗并更新列表数据
           handleCancel();
-          getGoals();
+          getGoals() // 用异步确保等待 getGoals 函数解析为数组
+          
         } catch (err) {
           console.error('Validation or API call failed:', err);
         }
@@ -191,51 +185,58 @@ const User = () => {
 
       const baseUrl = 'http://127.0.0.1:8080'
       
-      // 定义addChangeGoal函数
-      const addChangeGoal = async (data) => {
-        const url = baseUrl+'/api/goals/add_change_goal';
-        try {
-            const response = await axios.post(url, data);
-            console.log('服务器响应:', response);
-        } catch (error) {
-            console.error('Error adding/updating goal:', error.response ? error.response.data : error.message);
-            throw error; // 重新抛出错误，以便外部处理
-        }
-    };
     
     const getGoals = async () => {
         const url = baseUrl+'/api/goals/get_goals';
         try {
             const response = await axios.get(url);
-            console.log('Goals返回', response.data);
-            return response.data;
+            const formattedData = response.data.map(item => ({
+                ...item,
+                start_date: dayjs(item.start_date).format('YYYY-MM-DD'),
+                end_date: dayjs(item.end_date).format('YYYY-MM-DD')
+              }))
+            console.log('Goals返回', formattedData)
+            setTableData(formattedData)
+            
         } catch (error) {
             console.error('Error fetching goals:', error.response ? error.response.data : error.message);
-            throw error; // 重新抛出错误，以便外部处理
+            throw error; // 重新抛出错误
         }
     };
     
     
-
+    const handleFinish =  (recordData) => {
+        try {
+          // 假设后端接口为 /api/goals/update_status，并且接受 goal_id 和新的状态值
+           const response = axios.post('/api/goals/add_change_goal', {
+            goal_id: recordData.goal_id, // 从 recordData 中获取 goal_id
+            status: 1 // 将状态设置为 1，代表 "Done"
+          });
+          setListData(response.data);
+         
+        } catch (error) {
+          // 处理请求错误
+          console.error('Error updating status:', error);
+        }
+      };
+      
     
 
     //删除
-    const handleDelete = ({id}) => {
-        console.log('删掉的',id)
-        deleteUser({id}).then(
-          getTableData()
-        )
+    const handleDelete = ({goal_id}) => {
+        console.log('删掉的',goal_id)
+        axios.get(baseUrl + `/api/goals/delete_goals/${goal_id}`)
+        .then(getGoals())
+        .catch(error => {
+            console.error('There was an error!', error);
+        });
+    
+          
     }
-    // 请求列表
-  const getTableData = () => {
-    getUser().then(({ data }) => {
-      console.log(data)
-      setTableData(data.list)
-    })
-  }
+ 
     // 首次加载后调用后端接口返回数据
     useEffect(() => {
-        getTableData()
+        getGoals()
     },[])
 
     return (
@@ -279,7 +280,7 @@ const User = () => {
     labelAlign="left"
     form={form} layout='vertical'>
 
-    {modelType === 1 && <Form.Item label='ID' name='id'><Input /></Form.Item>}
+    {modelType === 1 && <Form.Item label='ID' name='goal_id'><Input /></Form.Item>}
 
     <Form.Item label='Target name' name='title'
         rules={[

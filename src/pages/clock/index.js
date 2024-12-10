@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Form, Input, Select, Button, Space } from 'antd';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
+import { Form, Input, Button, Select, Space, Modal } from 'antd';
 import './clock.css'
 
 const { Option } = Select;
@@ -10,6 +10,7 @@ const CountdownTimer = () => {
   const [stopBtnClicked, setStopBtnClicked] = useState(false);
   const [isStopButtonDisabled, setIsStopButtonDisabled] = useState(true);
   const [isResetButtonDisabled, setIsResetButtonDisabled] = useState(true);
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const countDown = useRef(null);
   const intervalRef = useRef(null);
 
@@ -31,6 +32,7 @@ const CountdownTimer = () => {
 
     if (secondsLeft < 0) {
       resetCountDown();
+      setIsModalVisible(true); // 显示模态框
       return;
     }
 
@@ -50,13 +52,19 @@ const CountdownTimer = () => {
   const handleFinish = (values) => {
     const time = parseInt(values.countDownTime, 10);
     if (isNaN(time)) {
-      alert('Please enter a valid number');
+      Modal.error({
+        title: 'Error',
+        content: 'Please enter a valid number',
+      });
       return;
     }
 
     const timeInMs = time * ({ hours: 3600000, minutes: 60000, seconds: 1000 }[values.format]);
     if (!timeInMs) {
-      alert('Invalid format');
+      Modal.error({
+        title: 'Error',
+        content: 'Invalid format',
+      });
       return;
     }
 
@@ -86,41 +94,54 @@ const CountdownTimer = () => {
     return () => clearInterval(intervalRef.current); // 组件卸载时清除计时器
   }, [endTime, stopBtnClicked, setCountDown]);
 
+  // 模态框确认按钮的回调函数
+  const handleModalOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleModalCancel = () => {
+    setIsModalVisible(false);
+  };
+
   return (
     <div className="container">
       <Form className="form" onFinish={handleFinish}>
         <Space size={16}>
-        <Form.Item name="countDownTime" rules={[{ required: true, message: 'Please input the countdown time!' }]}>
-          <Input type="number" min="1" placeholder="Enter Countdown" />
-        </Form.Item>
-        <Form.Item name="format" rules={[{ required: true, message: 'Please select the time format!' }]}>
-          <Select placeholder="Select time format"  >
-            <Option value="hours">Hours</Option>
-            <Option value="minutes">Minutes</Option>
-            <Option value="seconds">Seconds</Option>
-          </Select>
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            SET
-          </Button>
-        </Form.Item>
+          <Form.Item name="countDownTime" rules={[{ required: true, message: 'Please input the countdown time!' }]}>
+            <Input type="number" min="1" placeholder="Enter Countdown" />
+          </Form.Item>
+          <Form.Item name="format" rules={[{ required: true, message: 'Please select the time format!' }]}>
+            <Select placeholder="Select time format">
+              <Option value="hours">Hours</Option>
+              <Option value="minutes">Minutes</Option>
+              <Option value="seconds">Seconds</Option>
+            </Select>
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              SET
+            </Button>
+          </Form.Item>
         </Space>
       </Form>
       <p className="countdown" ref={countDown}>00 : 00 : 00</p>
       <div className="buttons">
         <Button className="stop-btn" type="default" onClick={handleStopClick} disabled={isStopButtonDisabled}>
-        {stopBtnClicked ? 'REPLAY' : 'STOP'}
+          {stopBtnClicked ? 'REPLAY' : 'STOP'}
         </Button>
         <Button className="reset-btn" type="default" onClick={resetCountDown} disabled={isResetButtonDisabled}>
           RESET
         </Button>
       </div>
+      <Modal title="Time is up !" visible={isModalVisible}  onCancel={handleModalCancel}  onOk={handleModalOk}  cancelButtonProps={{ hidden: true }}>
+     
+      </Modal>
     </div>
   );
 };
 
 export default CountdownTimer;
+
 
 
 
