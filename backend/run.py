@@ -457,6 +457,30 @@ def get_task_template(id):
     return jsonify({'message': "Task Template doesn't found"}), 404
 
 
+# 通过title，查询task的详细信息
+@bp.route('/api/tasks/get_task', methods=['GET'])
+def get_task():
+    title = request.args.get('title')
+    task = Task.query.filter_by(title=title).first()
+    if task:
+        task_object = {
+            'task_id': task.task_id,
+            'title': task.title,
+            'description': task.description,
+            'start_time': task.start_time.isoformat() if task.start_time else None,
+            'end_time': task.end_time.isoformat() if task.end_time else None,
+            'expected_completion_time': task.expected_completion_time.isoformat() if task.expected_completion_time else None,
+            'priority': task.priority,
+            'point': task.point,
+            'category_id': task.category_id,
+            'repeat_cycle': task.repeat_cycle,
+            'completed': task.completed,
+            'front_task_id': task.front_task_id
+        }
+        return jsonify(task_object), 200
+    return jsonify({'message': "Task doesn't exist"}), 404
+
+
 @bp.route('/api/categories/add', methods=['POST'])
 def add_category():
     data = request.json
