@@ -149,6 +149,27 @@ def add_change_goal():
           
     return jsonify({'message': message}), 201
 
+@bp.route('/api/goals/get_goal_by_title', methods=['GET'])
+def get_goal_by_title():
+    goal_title = request.args.get('title')
+    goal_list = Goal.query.filter_by(title=goal_title)
+    goal_object_list=[]
+    for goal in goal_list:
+        goal_object = {
+            'goal_id': goal.goal_id,
+            'title': goal.title,
+            'description': goal.description,
+            'start_date': goal.start_date.isoformat() if goal.start_date else None,
+            'end_date': goal.end_date.isoformat() if goal.end_date else None,
+            'user_id': goal.user_id,
+            'team_id': goal.team_id,
+            'parent_goal_id': goal.parent_goal_id,
+            'status': goal.status,
+            'category': goal.category,
+            'progress': goal.progress
+        }
+        goal_object_list.append(goal_object)
+    return jsonify({'goal_list':goal_object_list}),201
 
 @bp.route('/api/goals/get_goal', methods=['GET'])
 def get_goal():
