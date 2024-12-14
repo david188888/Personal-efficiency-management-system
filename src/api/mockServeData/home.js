@@ -97,38 +97,51 @@ export default {
           data: List
         },
         tableData: [
-          {
-            name: 'oppo',
+          { 
+            time:'Monday',
+            name: 'dating',
             todayBuy: 500,
             monthBuy: 3500,
             totalBuy: 22000
           },
-          {
-            name: 'vivo',
+          { 
+            time:'Tuesday',
+            name: 'gyming',
             todayBuy: 300,
             monthBuy: 2200,
             totalBuy: 24000
           },
-          {
-            name: '苹果',
+          { 
+            time:'Wenesday',
+            name: 'coding',
             todayBuy: 800,
             monthBuy: 4500,
             totalBuy: 65000
           },
-          {
-            name: '小米',
+          { 
+            time:'Thursday',
+            name: 'gaming',
             todayBuy: 1200,
             monthBuy: 6500,
             totalBuy: 45000
           },
-          {
-            name: '三星',
+          { 
+            time:'Friday',
+            name: 'social activities',
             todayBuy: 300,
             monthBuy: 2000,
             totalBuy: 34000
           },
-          {
-            name: '魅族',
+          { 
+            time:'Saturday',
+            name: 'sleeping',
+            todayBuy: 350,
+            monthBuy: 3000,
+            totalBuy: 22000
+          },
+          { 
+            time:'Sunday',
+            name: 'travelling',
             todayBuy: 350,
             monthBuy: 3000,
             totalBuy: 22000

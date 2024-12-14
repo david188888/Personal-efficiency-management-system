@@ -33,7 +33,7 @@ const Target = () => {
     // 搜索
     const handleSearch = (e) => {
       console.log(e)
-      const url = `http://127.0.0.1:8080/api/goals/get_goal_by_title?title=${e.keyword}`;
+      const url = baseUrl+`/api/goals/get_goal_by_title?title=${e.keyword}`;
       axios.get(url)
       .then(response => {
         // 处理返回的数据

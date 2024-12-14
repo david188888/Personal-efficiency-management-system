@@ -44,7 +44,7 @@ def get_user():
     user = User.query.filter_by(username=username).first()
 
     if user and user.password_hash == password:  # 直接比较明文密码
-        return jsonify({'message': 'Login successful', 'user_id': user.user_id}), 200
+        return jsonify({'message': 'Login successful', 'user_id': user.user_id,'username':user.username}), 200
     else:
         return jsonify({'message': 'Invalid username or password'}), 201
     # user_id = request.args.get('user_id')

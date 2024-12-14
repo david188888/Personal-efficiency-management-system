@@ -57,10 +57,12 @@ const Login = () => {
                 // 登录成功，处理返回的用户数据
                 const userData = response.data;
                 
-                // console.log( userData);
+            
                 message.success('登录成功');
-                localStorage.setItem('token', userData.user_id);
-                console.log('token', localStorage.getItem('token'));
+                // console.log(userData);
+                localStorage.setItem('token',userData.user_id);
+                localStorage.setItem('username', userData.username);
+                console.log('token', localStorage.getItem('token'),localStorage.getItem('username'));
                 navigate('/home');
             } 
             else {    
