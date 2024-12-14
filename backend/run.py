@@ -148,27 +148,30 @@ def add_change_goal():
                 message = 'Invalid foreign key for user_id'
           
     return jsonify({'message': message}), 201
-@bp.route('/api/goals/get_goal_by_title', methods=['GET'])
-def get_goal_by_title():
-    title=request.args.get('title')
-    goals_list = Goal.query.filter_by(title=title)
-    goal_object_list=[]
-    for goal in goals_list:
+
+
+@bp.route('/api/goals/get_goal', methods=['GET'])
+def get_goal():
+    goal_title = request.args.get('title')
+    goal = Goal.query.filter_by(title=goal_title).first()
+    if goal:
         goal_object = {
-            'user_id': goal.user_id,
             'goal_id': goal.goal_id,
             'title': goal.title,
             'description': goal.description,
             'start_date': goal.start_date.isoformat() if goal.start_date else None,
             'end_date': goal.end_date.isoformat() if goal.end_date else None,
+            'user_id': goal.user_id,
             'team_id': goal.team_id,
             'parent_goal_id': goal.parent_goal_id,
-            'status': goal.status,
-            'category': goal.category,
-            'progress': goal.progress,
+            'status':goal.status,
+            'category':goal.category,
+            'progress':goal.progress
         }
-        goal_object_list.append(goal_object)
-    return jsonify({'goal_list':goal_object_list}),201
+        return jsonify(goal_object), 200
+    return jsonify({'message': "Goal doesn't exist"}), 404
+
+
 
 
 @bp.route('/api/goals/get_goals', methods=['GET'])
@@ -200,12 +203,11 @@ def get_goals():
     return jsonify(goals_with_sub_goals), 200
 
 
-@bp.route('/api/goals/delete_goals/<int:id>', methods=['GET'])
-def delete_goals(id):
-    goal_id = id
+@bp.route('/api/goals/delete_goals', methods=['GET'])
+def delete_goals():
+    goal_id = request.args.get('goal_id')
     goal = Goal.query.get(goal_id)
     sub_goals_list = goal.sub_goals
-    print(sub_goals_list)
     if goal:
         for sub_goal in sub_goals_list:
             db.session.delete(sub_goal)
@@ -366,16 +368,24 @@ def add_change_task():
             task.front_task_id = front_task_id
             db.session.commit()
             message = 'Task Updated'
+            
+            task_dict = {
+                'task_id': new_task.task_id,
+                'title': new_task.title,
+                'goal_id': new_task.goal_id,
+            }
+            # 将新的任务展示在前端
+            return jsonify({'message': message, 'task': task_dict}), 201
         except IntegrityError as e:
             db.session.rollback()
             error_message = str(e)
             if 'goal_id' in error_message:
-                print(error_message)
                 message = 'Invalid foreign key for goal_id'
             elif 'category_id' in error_message:
                 message = 'Invalid foreign key for category_id'
             elif 'front_task_id' in error_message:
                 message = 'Invalid foreign key for front_task_id'
+            return jsonify({'message': message}), 201
     else:
         try:
             new_task = Task(
@@ -397,6 +407,14 @@ def add_change_task():
             db.session.add(new_task)
             db.session.commit()
             message = 'Task Created'
+            #将new_task转化为json格式
+            task_dict = {
+                'task_id': new_task.task_id,
+                'title': new_task.title,
+                'goal_id': new_task.goal_id,
+            }
+            # 将新的任务展示在前端
+            return jsonify({'message': message, 'task': task_dict}), 201
         except IntegrityError as e:
             db.session.rollback()
             error_message = str(e)
@@ -408,7 +426,7 @@ def add_change_task():
             elif 'front_task_id' in error_message:
                 message = 'Invalid foreign key for front_task_id'
 
-    return jsonify({'message': message}), 201
+            return jsonify({'message': message}), 201
 
 
 @bp.route('/api/tasks/get_tasks', methods=['GET'])

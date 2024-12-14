@@ -1,3 +1,18 @@
+## Migrate Database
+If you change the structure of update some items in your Database, you need to migrate them using Flask-Migrate in your root dictionary
+```python
+# If you are first time
+$ flask db init
+
+#Then
+$ flask db migrate -m "Initial migration."
+
+# Finally
+$ flask db upgrade
+```
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
