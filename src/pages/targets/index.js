@@ -20,9 +20,7 @@ import { render } from '@testing-library/react'
 
 const Target = () => {
     
-    const [listData, setListData] = useState({
-          title: ''
-        })
+  
     const [tableData, setTableData] = useState([])
     // 0（新增）1（编辑）
     const [modelType,setModelType] = useState(0)
@@ -33,25 +31,17 @@ const Target = () => {
     // 搜索
     const handleSearch = (e) => {
       console.log(e)
-      setListData({ // 这个State设置是一个异步操作 要实时监听listData变化 用useEffect见下
-          title: e.keyword // 给name值传入 一个对象 跟初始格式保持一致
+      const url = `http://127.0.0.1:8080/api/goals/get_goal_by_title?title=${e.keyword}`;
+      axios.get(url)
+      .then(response => {
+        // 处理返回的数据
+        console.log('查询结果',response.data );
+        setTableData( response.data.goal_list ); // 假设返回的数据结构中有一个键为goal_list的数组
       })
   }
-  // 删除
-  const queryGoals = async (title) => {
-    try {
-      const response = await axios.get(`/api/goals/search?title=${title}`);
-      return response.data; // 返回查询到的目标数据
-    } catch (error) {
-      console.error('Error querying goals:', error);
-      throw error; // 抛出错误以便上层处理
-    }
-  };
+  
 
-  useEffect(() => {
-    //  queryGoals()
-      console.log('listData',listData)
-    },[listData]) // 监听listData变化更新列表
+ 
     
     const columns = [
         {
@@ -202,7 +192,7 @@ const Target = () => {
                 start_date: dayjs(item.start_date).format('YYYY-MM-DD'),
                 end_date: dayjs(item.end_date).format('YYYY-MM-DD')
               }))
-            console.log('Goals返回', formattedData)
+            console.log('Goals返回',formattedData)
             setTableData(formattedData)
             
         } catch (error) {
@@ -228,7 +218,7 @@ const Target = () => {
     //删除
     const handleDelete = ({ goal_id }) => {
         console.log('删掉的', goal_id);
-        axios.delete(baseUrl + `/api/goals/delete_goals/${goal_id}`)
+        axios.get(baseUrl + `/api/goals/delete_goals/${goal_id}`)
             .then(() => {
                 getGoals();  // 调用 getGoals 函数
             })

@@ -1,85 +1,75 @@
+.container {
+  text-align: center;
+  background-color: #fff;
+  padding: 3rem; /* 增加内边距 */
+  border-radius: 12px; /* 增加圆角大小 */
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.1); /* 增加阴影 */
+  height: auto;
+  max-width: 800px; /* 增加最大宽度 */
+  margin: 0 auto;
+}
 
-  .container {
-    
-    text-align: center;
-    background-color: #fff;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    height: 70vh;
-    
-  }
-  
-  .form {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 1rem;
-  }
-  
-  .time-input {
-    padding: 0.5rem;
-    font-size: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-right: 0.5rem;
-  }
-  
-  .format-select {
-    padding: 0.5rem;
-    font-size: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-right: 0.5rem;
-  }
-  
-  .set-btn {
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: 4px;
-    background-color: #007bff;
-    color: white;
-    cursor: pointer;
-  }
-  
-  .set-btn:hover {
-    background-color: #0056b3;
-  }
-  
-  .countdown {
-    font-size: 12rem;  
-    font-weight: bold;
-    margin-bottom: 6rem; 
-    color: #28a745;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
-  }
-  
-  .buttons {
-    display: flex;
-    justify-content: center;
-  }
-  
-  .stop-btn,
-  .reset-btn {
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: 4px;
-    margin-right: 0.5rem;
-    cursor: pointer;
-    background-color: #F96F71;
-    color: white;
-  }
-  
-  .stop-btn:hover,
-  .reset-btn:hover {
-    background-color: #5a6268;
-  }
-  
-  .stop-btn:disabled,
-  .reset-btn:disabled {
-    background-color: #c8c9ca;
-    cursor: not-allowed;
-  }
+.form {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem; /* 增加底部外边距 */
+}
+
+.form-item-input {
+  margin-right: 1rem; /* 增加右边距 */
+}
+
+.form-item-select {
+  margin-right: 1rem; /* 增加右边距 */
+}
+
+.set-button {
+  padding: 0.75rem 1.5rem; /* 增加按钮内边距 */
+  font-size: 1.25rem; /* 增加按钮文字大小 */
+  border: none;
+  border-radius: 6px; /* 增加按钮圆角大小 */
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+}
+
+.set-button:hover {
+  background-color: #0056b3;
+}
+
+.countdown {
+  font-size: 15rem; /* 增加倒计时文字大小 */
+  font-weight: bold;
+  margin-bottom: 3rem; /* 增加底部外边距 */
+  color: #28a745;
+  text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.2); /* 增加文字阴影 */
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+}
+
+.control-button {
+  padding: 0.75rem 1.5rem; /* 增加按钮内边距 */
+  font-size: 1.25rem; /* 增加按钮文字大小 */
+  border: none;
+  border-radius: 6px; /* 增加按钮圆角大小 */
+  margin-right: 1rem; /* 增加右边距 */
+  cursor: pointer;
+  background-color: #F96F71;
+  color: white;
+}
+
+.control-button:hover {
+  background-color: #5a6268;
+}
+
+.control-button:disabled {
+  background-color: #c8c9ca;
+  cursor: not-allowed;
+}
+
+
   
