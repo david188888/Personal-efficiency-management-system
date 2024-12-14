@@ -56,9 +56,11 @@ const Login = () => {
             if (response.status === 200) {
                 // 登录成功，处理返回的用户数据
                 const userData = response.data;
+                
                 // console.log( userData);
                 message.success('登录成功');
-                localStorage.setItem('token', userData.token);
+                localStorage.setItem('token', userData.user_id);
+                console.log('token', localStorage.getItem('token'));
                 navigate('/home');
             } 
             else {    
