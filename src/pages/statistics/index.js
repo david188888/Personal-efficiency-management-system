@@ -11,7 +11,7 @@ const Statistics = () => {
             // console.log('1',res.data.data)
             const { tableData,orderData,userData,videoData } = res.data.data
             console.log(tableData,orderData,userData,videoData)
-            setTableData(tableData)
+            // setTableData(tableData)
 
             // 给echarts传入数据前 进行数据组装
             const order = orderData
@@ -31,31 +31,45 @@ const Statistics = () => {
             // 数据组装完成后进行更新
             setEchartData({
               order:{
+                title: 'The amount of time your team spent on accomplishing tasks last week',
                 xData,
-                series
+                series,
               },
               user:{
+                title: 'State of your completion tasks last week',
                 xData:userData.map(item => item.date),
                 series: [
                   {
-                    name:'新增用户',
+                    name:'the number of completed tasks',
                     data:userData.map(item => item.new),
-                    type:'bar'
+                    type:'bar',
+                    label: {
+                      show: true,
+                      position: 'top', // 将标签显示在柱状图的顶部
+                      formatter: '{c}'  
+                    }
                   },
                   {
-                    name:'活跃用户',
+                    name:'task completion rate',
                     data:userData.map(item => item.active),
-                    type:'bar'
+                    type:'bar',
+                    label: {
+                      show: true,
+                      position: 'top', // 将标签显示在柱状图的顶部
+                      formatter: '{c}%' // 使用formatter函数来格式化标签文本，其中{c}代表数据值
+                    }
                   }
                 ]
               },
               video: {
+                title:'The distibution of completed tasks',
                 series:[
-                  {
+                  { 
+                    name:'Proportion of time spent on tasks',
                     data:videoData,
                     type:'pie'
                   }
-                ]
+                ],
               }
             })
         })
@@ -69,12 +83,12 @@ const Statistics = () => {
     
     return (
        <>
-            <h1>Statistics</h1>
+           
         {echartData.order && <MyEcharts chartData={echartData.order} style={{height:'280px',width:'100%'}}/>}
-        <div className="graph">
-          {echartData.user && <MyEcharts chartData={echartData.user} style={{height:'250px',width:'50%'}}/>}
-          {echartData.video && <MyEcharts chartData={echartData.video} style={{ width:'50%', height: '260px' }}/> }
-        </div>
+       
+          {echartData.user && <MyEcharts chartData={echartData.user} style={{height:'250px',width:'100%'}}/>}
+          {echartData.video && <MyEcharts chartData={echartData.video} isAxisChart={false} style={{ left:'30rem',width:'460px', height: '70%' }}/> }
+      
         </>
     )
 }

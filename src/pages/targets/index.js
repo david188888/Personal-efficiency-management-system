@@ -18,10 +18,10 @@ import dayjs from 'dayjs'
 import axios from 'axios'
 import { render } from '@testing-library/react'
 
-const User = () => {
+const Target = () => {
     
     const [listData, setListData] = useState({
-          name: ''
+          title: ''
         })
     const [tableData, setTableData] = useState([])
     // 0（新增）1（编辑）
@@ -34,15 +34,23 @@ const User = () => {
     const handleSearch = (e) => {
       console.log(e)
       setListData({ // 这个State设置是一个异步操作 要实时监听listData变化 用useEffect见下
-          name: e.keyword // 给name值传入 一个对象 跟初始格式保持一致
+          title: e.keyword // 给name值传入 一个对象 跟初始格式保持一致
       })
-      
-      // getTableData()
   }
+  // 删除
+  const queryGoals = async (title) => {
+    try {
+      const response = await axios.get(`/api/goals/search?title=${title}`);
+      return response.data; // 返回查询到的目标数据
+    } catch (error) {
+      console.error('Error querying goals:', error);
+      throw error; // 抛出错误以便上层处理
+    }
+  };
 
   useEffect(() => {
-      getGoals()
-      // console.log(listData)
+    //  queryGoals()
+      console.log('listData',listData)
     },[listData]) // 监听listData变化更新列表
     
     const columns = [
@@ -62,9 +70,9 @@ const User = () => {
             title:'Category',
             dataIndex:'category',
             render:(val) =>{
-              if (val === 1) {
+              if (val === 0) {
                 return 'Study';
-              } else if (val === 0) {
+              } else if (val === 1) {
                   return 'Career';
               }
               return 'Others'
@@ -156,7 +164,6 @@ const User = () => {
           values.start_date = dayjs(values.start_date).format('YYYY-MM-DDTHH:mm:ss') ;
           values.end_date = dayjs(values.end_date).format('YYYY-MM-DDTHH:mm:ss') ;
           values.user_id = 1; // 假设你有一个固定的user_id
-          values.is_root = true; // 假设你有一个固定的is_root值
           values.parent_goal_id = null; // 假设你有一个固定的parent_goal_id值
           console.log('提交字段',values)
         
@@ -177,7 +184,7 @@ const User = () => {
         }
       };
       
-      // 取消按钮点击事件处理
+      // 取消按钮点击事件处理  
       const handleCancel = () => {
         setIsModalOpen(false);
         form.resetFields(); // 清除已提交、删除的填写字段
@@ -205,34 +212,31 @@ const User = () => {
     };
     
     
-    const handleFinish =  (recordData) => {
-        try {
-          // 假设后端接口为 /api/goals/update_status，并且接受 goal_id 和新的状态值
-           const response = axios.post('/api/goals/add_change_goal', {
-            goal_id: recordData.goal_id, // 从 recordData 中获取 goal_id
-            status: 1 // 将状态设置为 1，代表 "Done"
-          });
-          setListData(response.data);
-         
-        } catch (error) {
-          // 处理请求错误
-          console.error('Error updating status:', error);
-        }
-      };
+    
+
+  // handleFinish函数，用于将指定记录的status设置为1
+  const handleFinish = ({goal_id} ) => {
+    setTableData(prevData =>
+      prevData.map(record =>
+        record.goal_id ===  goal_id ? { ...record, status: 1 } : record
+      )
+    );
+  };
       
     
 
     //删除
-    const handleDelete = ({goal_id}) => {
-        console.log('删掉的',goal_id)
-        axios.get(baseUrl + `/api/goals/delete_goals/${goal_id}`)
-        .then(getGoals())
-        .catch(error => {
-            console.error('There was an error!', error);
-        });
+    const handleDelete = ({ goal_id }) => {
+        console.log('删掉的', goal_id);
+        axios.delete(baseUrl + `/api/goals/delete_goals/${goal_id}`)
+            .then(() => {
+                getGoals();  // 调用 getGoals 函数
+            })
+            .catch(error => {
+                console.error('There was an error!', error);
+            });
+    };
     
-          
-    }
  
     // 首次加载后调用后端接口返回数据
     useEffect(() => {
@@ -381,4 +385,4 @@ const User = () => {
 
 
 
-export default User;
+export default Target;

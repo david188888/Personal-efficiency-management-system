@@ -90,7 +90,7 @@ const Login = () => {
                 </a>
             </Form.Item>
 
-            <Modal title="注册" visible={isModalVisible} onCancel={() => setIsModalVisible(false)} footer={null}>
+            <Modal title="注册" open={isModalVisible} onCancel={() => setIsModalVisible(false)} footer={null}>
                 <Form onFinish={handleRegisterSubmit}>
                     <Form.Item label='账号' name="username" rules={[{ required: true, message: '请输入用户名' }]}>
                         <Input type="text" placeholder="用户名" />
