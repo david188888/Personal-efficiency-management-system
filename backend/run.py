@@ -148,6 +148,27 @@ def add_change_goal():
                 message = 'Invalid foreign key for user_id'
           
     return jsonify({'message': message}), 201
+@bp.route('/api/goals/get_goal_by_title', methods=['GET'])
+def get_goal_by_title():
+    title=request.args.get('title')
+    goals_list = Goal.query.filter_by(title=title)
+    goal_object_list=[]
+    for goal in goals_list:
+        goal_object = {
+            'user_id': goal.user_id,
+            'goal_id': goal.goal_id,
+            'title': goal.title,
+            'description': goal.description,
+            'start_date': goal.start_date.isoformat() if goal.start_date else None,
+            'end_date': goal.end_date.isoformat() if goal.end_date else None,
+            'team_id': goal.team_id,
+            'parent_goal_id': goal.parent_goal_id,
+            'status': goal.status,
+            'category': goal.category,
+            'progress': goal.progress,
+        }
+        goal_object_list.append(goal_object)
+    return jsonify({'goal_list':goal_object_list}),201
 
 
 

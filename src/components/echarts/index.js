@@ -12,6 +12,10 @@ const axisOption = {
     tooltip: {
       trigger: "axis",
     },
+    title: {
+      text: '',  
+      left: 'center' // 标题居中
+    },
     xAxis: {
       type: "category", // 类目轴
       data: [],
@@ -33,6 +37,11 @@ const axisOption = {
             color: "#17b3a3",
           },
         },
+      name: 'Hours / %', // 添加纵坐标单位
+      nameLocation: 'end', // 单位显示在y轴的顶部
+      nameTextStyle: {
+        fontSize: 18, // 单位文字大小
+      }
       },
     ],
     color: ["#2ec7c9", "#b6a2de", "#5ab1ef", "#ffb980", "#d87a80", "#8d98b3"],
@@ -41,6 +50,14 @@ const axisOption = {
   
   // 无坐标系的配置项
   const normalOption = {
+    title: {
+      text: '',  
+      left: 'center', // 标题居中
+    },
+    textStyle: {
+      color: "#333",
+    },
+    // 提示框
     tooltip: {
       trigger: "item",
     },
@@ -52,6 +69,8 @@ const axisOption = {
       "#e1bb22",
       "#39c362",
       "#3ed1cf",
+      "#f49f05",
+      "#7a63f2",
     ],
     series: [],
   }
@@ -67,12 +86,15 @@ const axisOption = {
         echartObj.current = echarts.init(echartRef.current) 
         // option配置项的组装
         if (isAxisChart==true){
+           axisOption.title.text = chartData.title;
             axisOption.xAxis.data = chartData.xData
             axisOption.series = chartData.series
             options = axisOption
         }else{
+           console.log('chartData',chartData)
+            normalOption.title.text = chartData.title;
             normalOption.series = chartData.series
-            options = axisOption
+            options = normalOption
             console.log('没有横坐标')
         }
         echartObj.current.setOption(options) // 在图表实例上调用setOption给实例传递配置项

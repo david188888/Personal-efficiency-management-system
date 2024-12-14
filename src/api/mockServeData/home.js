@@ -9,86 +9,91 @@ export default {
     for (let i = 0; i < 7; i++) {
       List.push(
         Mock.mock({
-          苹果: Mock.Random.float(100, 8000, 0, 0),
-          vivo: Mock.Random.float(100, 8000, 0, 0),
-          oppo: Mock.Random.float(100, 8000, 0, 0),
-          魅族: Mock.Random.float(100, 8000, 0, 0),
-          三星: Mock.Random.float(100, 8000, 0, 0),
-          小米: Mock.Random.float(100, 8000, 0, 0)
+          Jack: Mock.Random.float(10, 80, 0, 0),
+          Samuel: Mock.Random.float(10, 80, 0, 0),
+          Serena: Mock.Random.float(10, 80, 0, 0),
+          Jonny: Mock.Random.float(10, 80, 0, 0),
+          Tobby: Mock.Random.float(10, 80, 0, 0),
+          Henry: Mock.Random.float(10, 80, 0, 0)
         })
       )
     }
+    
     return {
-      code: 20000,
+      
       data: {
         // 饼图
         videoData: [
           {
-            name: '小米',
-            value: 2999
+            name: 'Coding',
+            value:30
           },
           {
-            name: '苹果',
-            value: 5999
+            name: 'Fitness',
+            value: 12
           },
           {
-            name: 'vivo',
-            value: 1500
+            name: 'Reading',
+            value: 15
           },
           {
-            name: 'oppo',
-            value: 1999
+            name: 'Game Time',
+            value: 19
           },
           {
-            name: '魅族',
-            value: 2200
+            name: 'Having lessons',
+            value: 22
           },
           {
-            name: '三星',
-            value: 4500
+            name: 'Social activities',
+            value: 4
+          },
+          {
+            name: 'Entertainment on social media',
+            value: 4
           }
         ],
         // 柱状图
         userData: [
           {
-            date: '周一',
+            date: 'Monday',
             new: 5,
-            active: 200
+            active: 50
           },
           {
-            date: '周二',
+            date: 'Tuesday',
+            new: 6,
+            active: 50
+          },
+          {
+            date: 'Wenesday',
+            new: 3,
+            active:30
+          },
+          {
+            date: 'Thursday',
+            new: 7,
+            active: 50
+          },
+          {
+            date: 'Friday',
+            new: 6,
+            active: 55
+          },
+          {
+            date: 'Saturday',
             new: 10,
-            active: 500
+            active: 6
           },
           {
-            date: '周三',
-            new: 12,
-            active: 550
-          },
-          {
-            date: '周四',
-            new: 60,
-            active: 800
-          },
-          {
-            date: '周五',
-            new: 65,
-            active: 550
-          },
-          {
-            date: '周六',
-            new: 53,
-            active: 770
-          },
-          {
-            date: '周日',
-            new: 33,
-            active: 170
+            date: 'Sunday',
+            new: 2,
+            active: 17
           }
         ],
         // 折线图
         orderData: {
-          date: ['20191001', '20191002', '20191003', '20191004', '20191005', '20191006', '20191007'],
+          date: ['20241202', '20241203', '20241204', '20241205', '20241206', '20241207', '20241008'],
           data: List
         },
         tableData: [
