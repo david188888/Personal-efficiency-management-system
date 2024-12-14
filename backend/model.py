@@ -81,7 +81,7 @@ class Goal(db.Model):
     progress_percentage = db.Column(db.Float, default=0.0)
     points_earned = db.Column(db.Integer, default=0)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=True)
-    parent_goal_id = db.Column(db.Integer, db.ForeignKey('goals.goal_id'), nullable=True)
+    parent_goal_id = db.Column(db.Integer, db.ForeignKey('goals.goal_id', ondelete='CASCADE'),  nullable=True)
     team_id = db.Column(db.Integer, db.ForeignKey('teams.team_id'), nullable=True)
     category=db.Column(db.Integer,nullable=True)
     status=db.Column(db.Integer,nullable=True)
