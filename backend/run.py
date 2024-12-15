@@ -228,8 +228,9 @@ def get_goals():
 def delete_goals():
     goal_id = request.args.get('goal_id')
     goal = Goal.query.get(goal_id)
-    sub_goals_list = goal.sub_goals
+
     if goal:
+        sub_goals_list = goal.sub_goals
         for sub_goal in sub_goals_list:
             db.session.delete(sub_goal)
         db.session.delete(goal)
@@ -277,6 +278,7 @@ def delete_goal_template(id):
 # 不能修改
 @bp.route('/api/goals/save_goal_template', methods=['POST'])
 def save_goal_template():
+    return jsonify({'message': 'test'}), 201
     data = request.json
     name = data.get('name', '')
     description = data.get('description', '')
@@ -569,7 +571,7 @@ def save_task_template():
     name = data.get('name', '')
     description = data.get('description', '')
     categories = data.get('categories', '')
-    structure = data.get('structure', None)
+    task_structure = data.get('task_structure', None)
     user_id = int(data.get('user_id', None)) if data.get('user_id') is not None else None
     message = ''
     try:
@@ -577,7 +579,7 @@ def save_task_template():
             name=name,
             description=description,
             categories=categories,
-            structure=structure,
+            task_structure=task_structure,
             user_id=user_id,
         )
         db.session.add(new_template)
