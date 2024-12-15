@@ -153,10 +153,12 @@ const Home = () => {
          
           </div>
         </Card>
-        <Card style={{ marginTop: '20px' }} hoverable>
+        <Card style={{ marginTop: '-10px' }} hoverable>
           <Table rowKey={"name"} columns={columns}  dataSource={tableData} pagination={false} /> 
          
         </Card>
+
+        
       </Col>
       <Col style={{ marginTop: '20px' }} span={15}>
         <div className="num">

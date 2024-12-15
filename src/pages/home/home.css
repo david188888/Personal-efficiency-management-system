@@ -38,8 +38,13 @@
 .home .num .ant-card {
     width: 33%;
     margin-bottom: 20px;
-}
-.home .icon-box {
+    height: 300px; /* 增加高度 */
+    display: flex;
+    align-items: center; /* 使内容垂直居中 */
+    justify-content: center; /* 使内容水平居中 */
+  }
+  
+  .home .icon-box {
     width: 80px;
     height: 80px;
     text-align: center;
@@ -47,11 +52,18 @@
     color: #fff;
     border-top-left-radius: 5px;
     border-bottom-left-radius: 5px;
-}
-.home .num .ant-card-body {
+    display: flex;
+    align-items: center; /* 使图标垂直居中 */
+    justify-content: center; /* 使图标水平居中 */
+  }
+  
+  .home .num .ant-card-body {
     display: flex;
     padding: 10px 25px;
-}
+    flex-direction: column; /* 改为列布局 */
+    justify-content: center; /* 使内容垂直居中 */
+    align-items: center; /* 使内容水平居中 */
+  }
 
 .home .num .icon {
     font-size: 30px;
@@ -68,12 +80,14 @@
     margin-left: 15px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
-}
-.home .num .detail .num {
+    justify-content: center; /* 使文字垂直居中 */
+    align-items: center; /* 使文字水平居中 */
+  }
+  
+  .home .num .detail .num {
     font-size: 30px;
     margin-bottom: 10px;
-}
+  }
 
 .home .graph {
     display: flex;

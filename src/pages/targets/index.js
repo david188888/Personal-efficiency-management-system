@@ -158,8 +158,8 @@ const Target = () => {
            
           values.start_date = dayjs(values.start_date).format('YYYY-MM-DDTHH:mm:ss') ;
           values.end_date = dayjs(values.end_date).format('YYYY-MM-DDTHH:mm:ss') ;
-          values.user_id = localStorage.getItem('token');; // 假设你有一个固定的user_id
-          values.parent_goal_id = null; // 假设你有一个固定的parent_goal_id值
+          values.user_id = localStorage.getItem('token');
+          values.parent_goal_id = null;
           console.log('提交字段',values)
         
         const url = baseUrl+'/api/goals/add_change_goal';
