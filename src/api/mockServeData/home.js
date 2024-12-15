@@ -100,51 +100,51 @@ export default {
           { 
             time:'Monday',
             name: 'dating',
-            todayBuy: 500,
-            monthBuy: 3500,
-            totalBuy: 22000
+            todayBuy: 'to be set',
+            monthBuy: 'to be set',
+            totalBuy: 'to be set'
           },
           { 
             time:'Tuesday',
             name: 'gyming',
-            todayBuy: 300,
-            monthBuy: 2200,
-            totalBuy: 24000
+            todayBuy: 'to be set',
+            monthBuy: 'to be set',
+            totalBuy: 'to be set'
           },
           { 
             time:'Wenesday',
             name: 'coding',
-            todayBuy: 800,
-            monthBuy: 4500,
-            totalBuy: 65000
+            todayBuy: 'to be set',
+            monthBuy: 'to be set',
+            totalBuy: 'to be set'
           },
           { 
             time:'Thursday',
             name: 'gaming',
-            todayBuy: 1200,
-            monthBuy: 6500,
-            totalBuy: 45000
+            todayBuy: 'to be set',
+            monthBuy: 'to be set',
+            totalBuy: 'to be set'
           },
           { 
             time:'Friday',
-            name: 'social activities',
-            todayBuy: 300,
-            monthBuy: 2000,
-            totalBuy: 34000
+            name: 'socialing',
+            todayBuy: 'to be set',
+            monthBuy: 'to be set',
+            totalBuy: 'to be set'
           },
           { 
             time:'Saturday',
             name: 'sleeping',
-            todayBuy: 350,
-            monthBuy: 3000,
-            totalBuy: 22000
+            todayBuy: 'to be set',
+            monthBuy: 'to be set',
+            totalBuy: 'to be set'
           },
           { 
             time:'Sunday',
             name: 'travelling',
-            todayBuy: 350,
-            monthBuy: 3000,
-            totalBuy: 22000
+            todayBuy: 'to be set',
+            monthBuy: 'to be set',
+            totalBuy: 'to be set'
           }
         ]
       }

@@ -22,7 +22,7 @@ const CommonHeader = (collapsed) => {
           key: '1',
           label: (
             <a target="_blank" rel="noopener noreferrer">
-              个人中心
+              Personal Center
             </a>
           ),
         },
@@ -30,7 +30,7 @@ const CommonHeader = (collapsed) => {
           key: '2',
           label: (
             <a onClick={()=>logout()}target="_blank" rel="noopener noreferrer" >
-              退出
+              Log Out
             </a>
           ), 
           
