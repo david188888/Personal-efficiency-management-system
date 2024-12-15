@@ -26,12 +26,12 @@ const Task = () => {
     // 搜索
     const handleSearch = (e) => {
         console.log(e)
-        const url = `http://127.0.0.1:8080/api/tasks/get_task_by_title?title=${e.keyword}`;
+        const url = `http://127.0.0.1:8080/api/tasks/get_task?title=${e.keyword}`;
         axios.get(url)
         .then(response => {
           // 处理返回的数据
           console.log('查询结果',response.data );
-          setTableData( response.data.task_list ); // 假设返回的数据结构中有一个键为goal_list的数组
+          setTableData( response.data.task_list);
         })
     }
     const columns = [
@@ -74,7 +74,6 @@ const Task = () => {
         {
           title:'Priority',
           dataIndex:'priority',
-          render: (val) => `${val}%`
         },
         {
             title:(
@@ -121,8 +120,8 @@ const Task = () => {
             // 对原数据做深拷贝
             const cloneData = JSON.parse(JSON.stringify(recordData))
             // 对后端返回日期格式转换 到符合前端组件的格式
-            cloneData.start_date = dayjs(cloneData.start_time)
-            cloneData.end_date = dayjs(cloneData.end_time)
+            cloneData.start_time = dayjs(cloneData.start_time)
+            cloneData.end_time = dayjs(cloneData.end_time)
             setModelType(1)  // 走到编辑逻辑
             console.log('clone',cloneData)
             //表单数据回填
@@ -134,28 +133,24 @@ const Task = () => {
 
       const handleOk = async () => {
         try {
-          const values = await form.validateFields();
-          //日期参数
-          values.start_date = dayjs(values.start_time).format('YYYY-MM-DDTHH:mm:ss') ;
-          values.end_date = dayjs(values.end_time).format('YYYY-MM-DDTHH:mm:ss') ;
-          values.user_id = 1; // 假设你有一个固定的user_id
-          values.parent_goal_id = null; // 假设你有一个固定的parent_goal_id值
-          console.log('提交字段',values)
-        const url = baseUrl+'/api/tasks/add_change_task';
-        try {
-            const response = await axios.post(url, values);
-            console.log('服务器响应:', response);
+            const values = await form.validateFields();
+            // 转换时间为后端期望的格式
+            values.start_time = dayjs(values.start_time).format('YYYY-MM-DDTHH:mm:ss');
+            values.end_time = dayjs(values.end_time).format('YYYY-MM-DDTHH:mm:ss');
+            values.user_id = localStorage.getItem('token');
+
+            console.log('提交的数据:', values);
+
+            const response = await axios.post(baseUrl + '/api/tasks/add_change_task', values);
+            console.log('后端返回:', response.data);
+
+            handleCancel();
+            await getTasks();
         } catch (error) {
-            console.error('Error adding/updating goal:', error.response ? error.response.data : error.message);
-            throw error; // 重新抛出错误
+            console.error('提交任务失败:', error.response ? error.response.data : error.message);
         }
-          // 关闭弹窗并更新列表数据
-          handleCancel();
-          getTasks() // 用异步确保等待 getGoals 函数解析为数组
-        } catch (err) {
-          console.error('Validation or API call failed:', err);
-        }
-      };
+    };
+
       // 取消按钮点击事件处理
       const handleCancel = () => {
         setIsModalOpen(false);
@@ -170,10 +165,10 @@ const Task = () => {
             const response = await axios.get(url);
             const formattedData = response.data.map(item => ({
                 ...item,
-                start_date: dayjs(item.start_time).format('YYYY-MM-DDTHH:mm:ss'),
-                end_date: dayjs(item.end_time).format('YYYY-MM-DDTHH:mm:ss')
+                start_time: dayjs(item.start_time).format('YYYY-MM-DD HH:mm:ss'),
+                end_time: dayjs(item.end_time).format('YYYY-MM-DD HH:mm:ss')
               }))
-            console.log('Goals返回',formattedData)
+            console.log('Tasks返回',formattedData)
             setTableData(formattedData)
         } catch (error) {
             console.error('Error fetching tasks:', error.response ? error.response.data : error.message);
@@ -205,7 +200,7 @@ const Task = () => {
 
     // 首次加载后调用后端接口返回数据
     useEffect(() => {
-        getTasks()
+        setTableData([]);// 更新任务列表
     },[])
 
     return (
@@ -245,7 +240,7 @@ const Task = () => {
     labelAlign="left"
     form={form} layout='vertical'>
 
-    {modelType === 1 && <Form.Item label='ID' name='goal_id'><Input /></Form.Item>}
+    {modelType === 1 && <Form.Item label='ID' name='task_id'><Input /></Form.Item>}
 
     <Form.Item label='Task name' name='title'
         rules={[
@@ -267,7 +262,7 @@ const Task = () => {
             },
         ]}
     >
-        <DatePicker placeholder="Please select" format="YYYY-MM-DDTHH:mm:ss" />
+        <DatePicker showTime placeholder="Please select" format="YYYY-MM-DD HH:mm:ss" />
     </Form.Item>
 
     <Form.Item
@@ -280,7 +275,7 @@ const Task = () => {
             },
         ]}
     >
-        <DatePicker placeholder="Please select" format="YYYY-MM-DDTHH:mm:ss" />
+        <DatePicker showTime placeholder="Please select" format="YYYY-MM-DD HH:mm:ss" />
     </Form.Item>
 
     <Form.Item
