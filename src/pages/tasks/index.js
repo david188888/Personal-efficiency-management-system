@@ -19,6 +19,9 @@ import axios from 'axios'
 import { render } from '@testing-library/react'
 
 const Task = () => {
+    const [listData, setListData] = useState({
+            title: ''
+        })
     const [tableData, setTableData] = useState([])
     const [modelType,setModelType] = useState(0)
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -26,7 +29,7 @@ const Task = () => {
     // 搜索
     const handleSearch = (e) => {
         console.log(e)
-        const url = `http://127.0.0.1:8080/api/tasks/get_task?title=${e.keyword}`;
+        const url = baseUrl+`/api/tasks/get_task_by_title?title=${e.keyword}`;
         axios.get(url)
         .then(response => {
           // 处理返回的数据
@@ -34,6 +37,10 @@ const Task = () => {
           setTableData( response.data.task_list);
         })
     }
+
+    useEffect(() => {
+    setListData(listData)
+    },[listData]) // 监听listData变化更新列表
     const columns = [
         {
             title:'Task name',
@@ -74,6 +81,7 @@ const Task = () => {
         {
           title:'Priority',
           dataIndex:'priority',
+          render: (val) => `${val}`
         },
         {
             title:(
@@ -135,8 +143,8 @@ const Task = () => {
         try {
             const values = await form.validateFields();
             // 转换时间为后端期望的格式
-            values.start_time = dayjs(values.start_time).format('YYYY-MM-DDTHH:mm:ss');
-            values.end_time = dayjs(values.end_time).format('YYYY-MM-DDTHH:mm:ss');
+            values.start_time = dayjs(values.start_time).format('YYYY-MM-DD HH:mm:ss');
+            values.end_time = dayjs(values.end_time).format('YYYY-MM-DD HH:mm:ss');
             values.user_id = localStorage.getItem('token');
 
             console.log('提交的数据:', values);
@@ -145,7 +153,7 @@ const Task = () => {
             console.log('后端返回:', response.data);
 
             handleCancel();
-            await getTasks();
+            getTasks();
         } catch (error) {
             console.error('提交任务失败:', error.response ? error.response.data : error.message);
         }
@@ -163,13 +171,10 @@ const Task = () => {
         const url = baseUrl+'/api/tasks/get_tasks';
         try {
             const response = await axios.get(url);
-            const formattedData = response.data.map(item => ({
-                ...item,
-                start_time: dayjs(item.start_time).format('YYYY-MM-DD HH:mm:ss'),
-                end_time: dayjs(item.end_time).format('YYYY-MM-DD HH:mm:ss')
-              }))
-            console.log('Tasks返回',formattedData)
-            setTableData(formattedData)
+            const tasksData=response.data.flatMap(item => item[0]);
+
+            console.log('Tasks返回',tasksData)
+            setTableData(tasksData)
         } catch (error) {
             console.error('Error fetching tasks:', error.response ? error.response.data : error.message);
             throw error; // 重新抛出错误
@@ -200,7 +205,7 @@ const Task = () => {
 
     // 首次加载后调用后端接口返回数据
     useEffect(() => {
-        setTableData([]);// 更新任务列表
+        getTasks()
     },[])
 
     return (
