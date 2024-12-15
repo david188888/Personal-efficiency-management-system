@@ -71,7 +71,7 @@ const CommonAside = ({collapsed}) => {
 
     return (
         <Sider trigger={null} collapsed={collapsed}>
-       <h3 className= "app-name">{collapsed?'效率管理':'个人效率管理平台'}</h3> 
+       <h3 className= "app-name">{collapsed?'Personal Admin':'Personal Efficiency Management'}</h3> 
         <Menu
           theme="dark"
           mode="inline"

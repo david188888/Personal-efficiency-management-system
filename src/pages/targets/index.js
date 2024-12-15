@@ -20,7 +20,9 @@ import { render } from '@testing-library/react'
 
 const Target = () => {
     
-  
+    const [listData, setListData] = useState({
+          title: ''
+        })
     const [tableData, setTableData] = useState([])
     // 0（新增）1（编辑）
     const [modelType,setModelType] = useState(0)
@@ -31,7 +33,7 @@ const Target = () => {
     // 搜索
     const handleSearch = (e) => {
       console.log(e)
-      const url = `http://127.0.0.1:8080/api/goals/get_goal_by_title?title=${e.keyword}`;
+      const url = baseUrl+`/api/goals/get_goal_by_title?title=${e.keyword}`;
       axios.get(url)
       .then(response => {
         // 处理返回的数据
@@ -41,7 +43,10 @@ const Target = () => {
   }
   
 
- 
+  useEffect(() => {
+    setListData(listData)
+    
+    },[listData]) // 监听listData变化更新列表
     
     const columns = [
         {
@@ -153,8 +158,8 @@ const Target = () => {
            
           values.start_date = dayjs(values.start_date).format('YYYY-MM-DDTHH:mm:ss') ;
           values.end_date = dayjs(values.end_date).format('YYYY-MM-DDTHH:mm:ss') ;
-          values.user_id = 1; // 假设你有一个固定的user_id
-          values.parent_goal_id = null; // 假设你有一个固定的parent_goal_id值
+          values.user_id = localStorage.getItem('token');
+          values.parent_goal_id = null;
           console.log('提交字段',values)
         
         const url = baseUrl+'/api/goals/add_change_goal';
@@ -218,7 +223,7 @@ const Target = () => {
     //删除
     const handleDelete = ({ goal_id }) => {
         console.log('删掉的', goal_id);
-        axios.get(baseUrl + `/api/goals/delete_goals/${goal_id}`)
+        axios.get(baseUrl + `/api/goals/delete_goals?goal_id=${goal_id}`)
             .then(() => {
                 getGoals();  // 调用 getGoals 函数
             })
@@ -242,7 +247,7 @@ const Target = () => {
                   <span style={{ fontSize: '20px' }}>Targets management</span>
                     </div>
                 
-                <Form 
+                <Form
                 form = {searchForm} // 绑定表单
                 layout='inline'
                 onFinish={handleSearch}> 

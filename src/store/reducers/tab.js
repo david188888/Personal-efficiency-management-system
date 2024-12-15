@@ -9,7 +9,7 @@ const tabSlice = createSlice({
         tabList:[{
             path:'/',
             name:'home',
-            label:'首页'
+            label:'Home Page'
         }],
         currentMenu: {
             

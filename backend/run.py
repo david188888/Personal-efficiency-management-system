@@ -44,7 +44,7 @@ def get_user():
     user = User.query.filter_by(username=username).first()
 
     if user and user.password_hash == password:  # 直接比较明文密码
-        return jsonify({'message': 'Login successful', 'user_id': user.user_id}), 200
+        return jsonify({'message': 'Login successful', 'user_id': user.user_id,'username':user.username}), 200
     else:
         return jsonify({'message': 'Invalid username or password'}), 201
     # user_id = request.args.get('user_id')
@@ -353,6 +353,7 @@ def add_change_task():
     title = data.get('title', '')
     description = data.get('description', '')
     start_time = data.get('start_time', None)
+    print(start_time)
     start_time = datetime.strptime(start_time,
                                    '%Y-%m-%dT%H:%M:%S') if start_time is not None and start_time != '' else None
     end_time = data.get('end_time', None)
@@ -393,9 +394,20 @@ def add_change_task():
             message = 'Task Updated'
             
             task_dict = {
-                'task_id': new_task.task_id,
-                'title': new_task.title,
-                'goal_id': new_task.goal_id,
+                'task_id': task.task_id,
+                'title': task.title,
+                'goal_id': task.goal_id,
+                'description': task.description,
+                'start_time': task.start_time.isoformat() if task.start_time else None,
+                'end_time': task.end_time.isoformat() if task.end_time else None,
+                'expected_completion_time': task.expected_completion_time.isoformat() if task.expected_completion_time else None,
+                'priority': task.priority,
+                'point': task.point,
+                'repeat_cycle': task.repeat_cycle,
+                'completed': task.completed,
+                'reminder_24h_sent': task.reminder_24h_sent,
+                'reminder_12h_sent': task.reminder_12h_sent,
+                'category_id': task.category_id,
             }
             # 将新的任务展示在前端
             return jsonify({'message': message, 'task': task_dict}), 201
@@ -435,6 +447,17 @@ def add_change_task():
                 'task_id': new_task.task_id,
                 'title': new_task.title,
                 'goal_id': new_task.goal_id,
+                'description': new_task.description,
+                'start_time': new_task.start_time.isoformat() if new_task.start_time else None,
+                'end_time': new_task.end_time.isoformat() if new_task.end_time else None,
+                'expected_completion_time': new_task.expected_completion_time.isoformat() if new_task.expected_completion_time else None,
+                'priority': new_task.priority,
+                'point': new_task.point,
+                'repeat_cycle': new_task.repeat_cycle,
+                'completed': new_task.completed,
+                'reminder_24h_sent': new_task.reminder_24h_sent,
+                'reminder_12h_sent': new_task.reminder_12h_sent,
+                'category_id': new_task.category_id
             }
             # 将新的任务展示在前端
             return jsonify({'message': message, 'task': task_dict}), 201
@@ -523,8 +546,9 @@ def get_task_template(id):
 @bp.route('/api/tasks/get_task', methods=['GET'])
 def get_task():
     title = request.args.get('title')
-    task = Task.query.filter_by(title=title).first()
-    if task:
+    task_lists = Task.query.filter_by(title=title)
+    task_object_list = []
+    for task in task_lists:
         task_object = {
             'task_id': task.task_id,
             'title': task.title,
@@ -539,7 +563,8 @@ def get_task():
             'completed': task.completed,
             'front_task_id': task.front_task_id
         }
-        return jsonify(task_object), 200
+        task_object_list.append(task_object)
+        return jsonify({'task_list': task_object_list}), 200
     return jsonify({'message': "Task doesn't exist"}), 404
 
 

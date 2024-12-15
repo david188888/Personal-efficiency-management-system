@@ -57,7 +57,7 @@ export default {
             {
               path: '/',
               name: 'home',
-              label: '首页',
+              label: 'Home Page',
               icon: 's-home',
               url: 'home/index'
             },

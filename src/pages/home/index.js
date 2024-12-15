@@ -7,57 +7,61 @@ import "./home.css";
 import {getData} from "../../api";
 
 const columns = [
+  {
+    title: 'Time',
+    dataIndex: 'time'
+  },
     {
-      title: '任务列表',
+      title: 'Task List',
       dataIndex: 'name'
     },
     {
-      title: '目标列表',
+      title: 'Target List',
       dataIndex: 'todayBuy'
     },
     {
-      title: '本周任务',
+      title: 'Key tasks',
       dataIndex: 'monthBuy'
     },
     {
-      title: '备注',
+      title: 'Remarks',
       dataIndex: 'totalBuy'
     }
   ]
   const countData = [
     {
-      "name": "今日已完成",
-      "value": 1234,
+      "name": "Completed today",
+      "value": 'reading',
       "icon": "CheckCircleOutlined",
       "color": "#2ec7c9"
     },
     {
-      "name": "今日待完成",
-      "value": 3421,
+      "name": "To be finished today",
+      "value": 'writing notes',
       "icon": "ClockCircleOutlined",
       "color": "#ffb980"
     },
     {
-      "name": "今日未完成",
-      "value": 1234,
+      "name": "Not finished today.",
+      "value": 'coding',
       "icon": "CloseCircleOutlined",
       "color": "#5ab1ef"
     },
     {
-      "name": "今日已完成",
-      "value": 1234,
+      "name": "It was completed today",
+      "value": 'take the package',
       "icon": "CheckCircleOutlined",
       "color": "#2ec7c9"
     },
     {
-      "name": "今日待完成",
-      "value": 3421,
+      "name": "To be finished today",
+      "value": 'hand out the form',
       "icon": "ClockCircleOutlined",
       "color": "#ffb980"
     },
     {
-      "name": "今日未完成",
-      "value": 1234,
+      "name": "Not finished today.",
+      "value": 'send the email',
       "icon": "CloseCircleOutlined",
       "color": "#5ab1ef"
     }
@@ -140,19 +144,21 @@ const Home = () => {
           <div className="user">
             <img src={userImg} />
             <div className="userinfo">
-              <p className="name">Admin</p>
-              <p className="access">超级管理员</p>
+              <p className="name">Welcome {localStorage.getItem('user_name')} !</p>
+              <p className="access">Have a good day 😄</p>
             </div>
           </div>
           <div className="login-info">
-            <p>上次登录时间：<span> XXX </span></p>
-            <p>上次登录地点：<span> XXX</span></p>
+            <p>Last time you logged in：<span> 2024-12-15 </span></p>
+         
           </div>
         </Card>
-        <Card style={{ marginTop: '20px' }} hoverable>
-          <Table rowKey={"name"} columns={columns}  pagination={false} /> 
-          {/* dataSource={} */}
+        <Card style={{ marginTop: '-10px' }} hoverable>
+          <Table rowKey={"name"} columns={columns}  dataSource={tableData} pagination={false} /> 
+         
         </Card>
+
+        
       </Col>
       <Col style={{ marginTop: '20px' }} span={15}>
         <div className="num">

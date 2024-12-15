@@ -97,41 +97,54 @@ export default {
           data: List
         },
         tableData: [
-          {
-            name: 'oppo',
-            todayBuy: 500,
-            monthBuy: 3500,
-            totalBuy: 22000
+          { 
+            time:'Monday',
+            name: 'dating',
+            todayBuy: 'to be set',
+            monthBuy: 'to be set',
+            totalBuy: 'to be set'
           },
-          {
-            name: 'vivo',
-            todayBuy: 300,
-            monthBuy: 2200,
-            totalBuy: 24000
+          { 
+            time:'Tuesday',
+            name: 'gyming',
+            todayBuy: 'to be set',
+            monthBuy: 'to be set',
+            totalBuy: 'to be set'
           },
-          {
-            name: '苹果',
-            todayBuy: 800,
-            monthBuy: 4500,
-            totalBuy: 65000
+          { 
+            time:'Wenesday',
+            name: 'coding',
+            todayBuy: 'to be set',
+            monthBuy: 'to be set',
+            totalBuy: 'to be set'
           },
-          {
-            name: '小米',
-            todayBuy: 1200,
-            monthBuy: 6500,
-            totalBuy: 45000
+          { 
+            time:'Thursday',
+            name: 'gaming',
+            todayBuy: 'to be set',
+            monthBuy: 'to be set',
+            totalBuy: 'to be set'
           },
-          {
-            name: '三星',
-            todayBuy: 300,
-            monthBuy: 2000,
-            totalBuy: 34000
+          { 
+            time:'Friday',
+            name: 'socialing',
+            todayBuy: 'to be set',
+            monthBuy: 'to be set',
+            totalBuy: 'to be set'
           },
-          {
-            name: '魅族',
-            todayBuy: 350,
-            monthBuy: 3000,
-            totalBuy: 22000
+          { 
+            time:'Saturday',
+            name: 'sleeping',
+            todayBuy: 'to be set',
+            monthBuy: 'to be set',
+            totalBuy: 'to be set'
+          },
+          { 
+            time:'Sunday',
+            name: 'travelling',
+            todayBuy: 'to be set',
+            monthBuy: 'to be set',
+            totalBuy: 'to be set'
           }
         ]
       }
