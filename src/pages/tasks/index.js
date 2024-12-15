@@ -143,8 +143,8 @@ const Task = () => {
         try {
             const values = await form.validateFields();
             // 转换时间为后端期望的格式
-            values.start_time = dayjs(values.start_time).format('YYYY-MM-DD HH:mm:ss');
-            values.end_time = dayjs(values.end_time).format('YYYY-MM-DD HH:mm:ss');
+            values.start_time = dayjs(values.start_time).format('YYYY-MM-DDTHH:mm:ss');
+            values.end_time = dayjs(values.end_time).format('YYYY-MM-DDTHH:mm:ss');
             values.user_id = localStorage.getItem('token');
 
             console.log('提交的数据:', values);
