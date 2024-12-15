@@ -29,12 +29,12 @@ const Task = () => {
     // 搜索
     const handleSearch = (e) => {
         console.log(e)
-        const url = baseUrl+`/api/tasks/get_task_by_title?title=${e.keyword}`;
+        const url = baseUrl+`/api/tasks/get_task?title=${e.keyword}`;
         axios.get(url)
         .then(response => {
           // 处理返回的数据
           console.log('查询结果',response.data );
-          setTableData( response.data.task_list);
+          setTableData(Array.from(response.data.task_list))
         })
     }
 

@@ -544,8 +544,9 @@ def get_task_template(id):
 @bp.route('/api/tasks/get_task', methods=['GET'])
 def get_task():
     title = request.args.get('title')
-    task = Task.query.filter_by(title=title).first()
-    if task:
+    task_lists = Task.query.filter_by(title=title)
+    task_object_list = []
+    for task in task_lists:
         task_object = {
             'task_id': task.task_id,
             'title': task.title,
@@ -560,7 +561,8 @@ def get_task():
             'completed': task.completed,
             'front_task_id': task.front_task_id
         }
-        return jsonify(task_object), 200
+        task_object_list.append(task_object)
+        return jsonify({'task_list': task_object_list}), 200
     return jsonify({'message': "Task doesn't exist"}), 404
 
 
