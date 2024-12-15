@@ -247,7 +247,7 @@ const Target = () => {
                   <span style={{ fontSize: '20px' }}>Targets management</span>
                     </div>
                 
-                <Form 
+                <Form
                 form = {searchForm} // 绑定表单
                 layout='inline'
                 onFinish={handleSearch}> 
