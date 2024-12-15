@@ -351,6 +351,7 @@ def add_change_task():
     title = data.get('title', '')
     description = data.get('description', '')
     start_time = data.get('start_time', None)
+    print(start_time)
     start_time = datetime.strptime(start_time,
                                    '%Y-%m-%dT%H:%M:%S') if start_time is not None and start_time != '' else None
     end_time = data.get('end_time', None)
@@ -397,7 +398,7 @@ def add_change_task():
                 'description': task.description,
                 'start_time': task.start_time.isoformat() if task.start_time else None,
                 'end_time': task.end_time.isoformat() if task.end_time else None,
-                'expected_completion_time': task.expected_completion_time.isoformat() if new_task.expected_completion_time else None,
+                'expected_completion_time': task.expected_completion_time.isoformat() if task.expected_completion_time else None,
                 'priority': task.priority,
                 'point': task.point,
                 'repeat_cycle': task.repeat_cycle,
@@ -454,7 +455,7 @@ def add_change_task():
                 'completed': new_task.completed,
                 'reminder_24h_sent': new_task.reminder_24h_sent,
                 'reminder_12h_sent': new_task.reminder_12h_sent,
-                'category_id': new_task
+                'category_id': new_task.category_id
             }
             # 将新的任务展示在前端
             return jsonify({'message': message, 'task': task_dict}), 201
