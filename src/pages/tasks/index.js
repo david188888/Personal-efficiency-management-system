@@ -30,6 +30,7 @@ const Task = () => {
     const handleSearch = (e) => {
         console.log(e)
         const url = baseUrl+`/api/tasks/get_task?title=${e.keyword}`;
+        console.log(e.keyword);
         axios.get(url)
         .then(response => {
           // 处理返回的数据
