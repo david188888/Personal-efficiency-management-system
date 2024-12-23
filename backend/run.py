@@ -1,5 +1,5 @@
 import json
-
+from sqlalchemy import func
 from flask import Blueprint, request, jsonify
 from model import *
 from sqlalchemy.exc import IntegrityError
@@ -171,6 +171,38 @@ def get_goal_by_title():
         goal_object_list.append(goal_object)
     return jsonify({'goal_list':goal_object_list}),201
 
+@bp.route('/api/goals/filter_goals', methods=['GET'])
+def filter_goals():
+    # 根据目标的名称类别，状态来筛选
+    goal_title = request.args.get('title')
+    category=request.args.get('category')
+    status=request.args.get('status')
+
+    query = Goal.query
+    if goal_title:
+        query = query.filter_by(title=goal_title)
+    if category:
+        query = query.filter_by(category=category)
+    if status:
+        query = query.filter_by(status=status)
+    goal_list = query.all()
+    goal_object_list=[]
+    for goal in goal_list:
+        goal_object = {
+            'goal_id': goal.goal_id,
+            'title': goal.title,
+            'description': goal.description,
+            'start_date': goal.start_date.isoformat() if goal.start_date else None,
+            'end_date': goal.end_date.isoformat() if goal.end_date else None,
+            'user_id': goal.user_id,
+            'team_id': goal.team_id,
+            'parent_goal_id': goal.parent_goal_id,
+            'status': goal.status,
+            'category': goal.category,
+            'progress': goal.progress
+        }
+        goal_object_list.append(goal_object)
+    return jsonify({'goal_list':goal_object_list}),201
 @bp.route('/api/goals/get_goal', methods=['GET'])
 def get_goal():
     goal_title = request.args.get('title')
@@ -560,8 +592,49 @@ def get_tasks():
             all_task_chains.append(task_list)
 
     return jsonify(all_task_chains), 200
+@bp.route('/api/tasks/filter_tasks', methods=['GET'])
+def filter_tasks():
+    # 传参没传value 为空字符串
+    title = request.args.get('title',None)
 
+    priority = request.args.get('priority')
+    completed = request.args.get('completed')
+    category_id = request.args.get('category_id')
+    point = request.args.get('point')
+    query = Task.query
+    if title is not None :
+        query = query.filter_by(title=title)
+    if priority is not None:
+        query = query.filter_by(priority=priority)
+    if completed is not None:
+        query = query.filter_by(completed=completed)
+    if category_id is not None:
+        query=query.filter_by(category_id=category_id)
+    if point is not None:
+        query = query.filter_by(point=point)
 
+    # 执行查询，获取结果列表
+    task_list = query.all()
+    task_object_list = []
+    for task in task_list:
+        task_object = {
+            'task_id': task.task_id,
+            'title': task.title,
+            'goal_id': task.goal_id,
+            'description': task.description,
+            'start_time': task.start_time.isoformat() if task.start_time else None,
+            'end_time': task.end_time.isoformat() if task.end_time else None,
+            'expected_completion_time': task.expected_completion_time.isoformat() if task.expected_completion_time else None,
+            'priority': task.priority,
+            'point': task.point,
+            'repeat_cycle': task.repeat_cycle,
+            'completed': task.completed,
+            'reminder_24h_sent': task.reminder_24h_sent,
+            'reminder_12h_sent': task.reminder_12h_sent,
+            'category_id': task.category_id,
+        }
+        task_object_list.append(task_object)
+    return jsonify({'goal_list': task_object_list}), 201
 @bp.route('/api/tasks/delete_task/<int:id>', methods=['GET'])
 def delete_task(id):
     task_id = id
@@ -846,6 +919,41 @@ def end_task_timer(id):
     db.session.commit()
     return jsonify({"message": 'Timer end'}), 200
 
+@bp.route('/api/tasks/finish_task',methods=['GET'])
+def finish_task():
+    task_id=request.args.get('task_id')
+    task=Task.query.get(task_id)
+    if task:
+        task.completed=True
+        max_level = Level.query.with_entities(func.max(Level.level_id)).scalar()
+        #此处未算共同任务
+        user=task.user
+        if user:
+            points=user.points
+            points+=1
+            level=user.level_id
+            if points>=10:
+                points= points % 10
+                if level<max_level:
+                    level+=1
+
+            else:
+                points+=1
+
+            user_point_history= UserPointsHistory(
+                user_id=user.user_id,
+                task_id=task_id,
+                points=1,
+                description='完成任务获得一个积分')
+            db.session.add(user_point_history)
+            user.level_id=level
+            user.points=points
+        else:
+            return jsonify({"message": "Task owner doesn't exist "}), 200
+        db.session.commit()
+    else:
+        return jsonify({"message": "Task doesn't exist " }), 200
+    return jsonify({"message": 'Task finished! You earned points! '}), 200
 
 # 在某一个日期范围内（以start_time 或end_time为区间）内搜索所有任务
 
