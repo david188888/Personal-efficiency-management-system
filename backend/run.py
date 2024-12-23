@@ -193,6 +193,59 @@ def get_goal():
     return jsonify({'message': "Goal doesn't exist"}), 404
 
 
+@bp.route('/api/goals/get_subgoal', methods=['GET'])
+def get_subgoal():
+    parent_goal_id = request.args.get('parent_goal_id')
+    sub_goals_list = Goal.query.filter_by(parent_goal_id=parent_goal_id)
+    sub_goals_object_list = []
+    for sub_goal in sub_goals_list:
+        sub_goal_object = {
+            'goal_id': sub_goal.goal_id,
+            'title': sub_goal.title,
+            'description': sub_goal.description,
+            'start_date': sub_goal.start_date.isoformat() if sub_goal.start_date else None,
+            'end_date': sub_goal.end_date.isoformat() if sub_goal.end_date else None,
+            'user_id': sub_goal.user_id,
+            'team_id': sub_goal.team_id,
+            'parent_goal_id': sub_goal.parent_goal_id,
+            'status':sub_goal.status,
+            'category':sub_goal.category,
+            'progress':sub_goal.progress
+        }
+        sub_goals_object_list.append(sub_goal_object)
+    return jsonify(sub_goals_object_list), 200
+
+
+@bp.route('/api/goals/add_subgoal', methods=['POST'])
+def add_subgoal():
+    data = request.json
+    parent_goal_id = int(data.get('parent_goal_id', None)) if data.get('parent_goal_id') is not None else None
+    title = data.get('title', '')
+    description = data.get('description', '')
+    start_date = data.get('start_date', None)
+    start_date = datetime.strptime(start_date,
+                                   '%Y-%m-%dT%H:%M:%S') if start_date is not None and start_date != '' else None
+    end_date = data.get('end_date', None)
+    end_date = datetime.strptime(end_date, '%Y-%m-%dT%H:%M:%S') if end_date is not None and end_date != '' else None
+    user_id = int(data.get('user_id', None)) if data.get('user_id') is not None else None
+    status = int(data.get('status', None)) if data.get('status') is not None else None
+    category = int(data.get('category', None)) if data.get('category') is not None else None
+    progress = int(data.get('progress', None)) if data.get('progress') is not None else None
+    new_goal = Goal(
+        title=title,
+        description=description,
+        start_date=start_date,
+        end_date=end_date,
+        user_id=user_id,
+        parent_goal_id=parent_goal_id,
+        status=status,
+        category=category,
+        progress=progress
+    )
+    db.session.add(new_goal)
+    db.session.commit()
+    return jsonify({'message': 'SubGoal created'}), 201
+
 
 
 @bp.route('/api/goals/get_goals', methods=['GET'])
@@ -278,7 +331,7 @@ def delete_goal_template(id):
 # 不能修改
 @bp.route('/api/goals/save_goal_template', methods=['POST'])
 def save_goal_template():
-    return jsonify({'message': 'test'}), 201
+    # return jsonify({'message': 'test'}), 201
     data = request.json
     name = data.get('name', '')
     description = data.get('description', '')
@@ -555,13 +608,9 @@ def get_task():
             'description': task.description,
             'start_time': task.start_time.isoformat() if task.start_time else None,
             'end_time': task.end_time.isoformat() if task.end_time else None,
-            'expected_completion_time': task.expected_completion_time.isoformat() if task.expected_completion_time else None,
             'priority': task.priority,
             'point': task.point,
-            'category_id': task.category_id,
-            'repeat_cycle': task.repeat_cycle,
             'completed': task.completed,
-            'front_task_id': task.front_task_id
         }
         task_object_list.append(task_object)
         return jsonify({'task_list': task_object_list}), 200
@@ -955,99 +1004,99 @@ def time_manage_plot():
 
 
 
-# 团队协作，创建团队，插入Teams 和 TeamMembers表
-@bp.route('/api/teams/add_team', methods=['POST'])
-def add_team():
-    data = request.json
-    name = data.get('team_name', '')
-    description = data.get('description', '') if data.get('description') else ''
-    leader_id = int(data.get('created_by_user_id', None)) if data.get('leader_id') else None
+# # 团队协作，创建团队，插入Teams 和 TeamMembers表
+# @bp.route('/api/teams/add_team', methods=['POST'])
+# def add_team():
+#     data = request.json
+#     name = data.get('team_name', '')
+#     description = data.get('description', '') if data.get('description') else ''
+#     leader_id = int(data.get('created_by_user_id', None)) if data.get('leader_id') else None
 
-    members = data.get('members', {})
-    if not name:
-        return jsonify({'message': 'Team name is required'}), 400
-    new_team = Team(
-        name=name,
-        description=description,
-        created_by_user_id=leader_id
-    )
-    db.session.add(new_team)
-    db.session.commit()
+#     members = data.get('members', {})
+#     if not name:
+#         return jsonify({'message': 'Team name is required'}), 400
+#     new_team = Team(
+#         name=name,
+#         description=description,
+#         created_by_user_id=leader_id
+#     )
+#     db.session.add(new_team)
+#     db.session.commit()
 
-    for member_id, role in members.items():
-        new_member = TeamMember(
-            team_id=new_team.team_id,
-            user_id=int(member_id) if member_id else None,
-            role=role if role else 'member'
-        )
-        db.session.add(new_member)
-        db.session.commit()
+#     for member_id, role in members.items():
+#         new_member = TeamMember(
+#             team_id=new_team.team_id,
+#             user_id=int(member_id) if member_id else None,
+#             role=role if role else 'member'
+#         )
+#         db.session.add(new_member)
+#         db.session.commit()
 
-    members_name = [User.query.get(member_id).username for member_id in members.keys()]
+#     members_name = [User.query.get(member_id).username for member_id in members.keys()]
 
-    result = {
-        'team_id': new_team.team_id,
-        'team_name': new_team.name,
-        'description': new_team.description,
-        'members': members_name
-    }
+#     result = {
+#         'team_id': new_team.team_id,
+#         'team_name': new_team.name,
+#         'description': new_team.description,
+#         'members': members_name
+#     }
 
-    # 返回新创建的团队信息和正确的状态码还有消息
-    return jsonify({'message': 'Team created', 'team': result}), 201
-
-
-# 获取团队详情和任务
-@bp.route('/api/teams/get_team', methods=['GET'])
-def get_team():
-    team_id = request.args.get('team_id')
-    team = Team.query.get(team_id)
-    if not team:
-        return jsonify({'message': 'Team not found'}), 404
-    team_members = TeamMember.query.filter_by(team_id=team_id).all()
-    members = []
-    for member in team_members:
-        user = User.query.get(member.user_id)
-        members.append({
-            'user_id': user.user_id,
-            'username': user.username,
-            'role': member.role,
-            'joined_at': member.joined_at
-        })
-    goals = Goal.query.filter_by(team_id=team_id).all() if team_id else None
-    if not goals:
-        result = {
-            'team_id': team.team_id,
-            'team_name': team.name,
-            'description': team.description,
-            'members': members,
-        }
-        return jsonify({'message': 'there is no goals for the team', 'result': result}), 200
-    goals_list = []
-    for goal in goals:
-        goal_object = {
-            'title': goal.title,
-            'progress_percentage': goal.progress_percentage
-        }
-        goals_list.append(goal_object)
-
-    result = {
-        'team_id': team.team_id,
-        'team_name': team.name,
-        'description': team.description,
-        'members': members,
-        'goals': goals_list
-    }
-    return jsonify(result), 200
+#     # 返回新创建的团队信息和正确的状态码还有消息
+#     return jsonify({'message': 'Team created', 'team': result}), 201
 
 
-# 删除团队
-@bp.route('/api/teams/delete_team', methods=['GET'])
-def delete_team():
-    team_id = request.args.get('team_id')
-    team = Team.query.get(team_id)
-    if not team:
-        return jsonify({'message': 'Team not found'}), 404
-    else:
-        db.session.delete(team)
-        db.session.commit()
-        return jsonify({'message': 'Team deleted'}), 200
+# # 获取团队详情和任务
+# @bp.route('/api/teams/get_team', methods=['GET'])
+# def get_team():
+#     team_id = request.args.get('team_id')
+#     team = Team.query.get(team_id)
+#     if not team:
+#         return jsonify({'message': 'Team not found'}), 404
+#     team_members = TeamMember.query.filter_by(team_id=team_id).all()
+#     members = []
+#     for member in team_members:
+#         user = User.query.get(member.user_id)
+#         members.append({
+#             'user_id': user.user_id,
+#             'username': user.username,
+#             'role': member.role,
+#             'joined_at': member.joined_at
+#         })
+#     goals = Goal.query.filter_by(team_id=team_id).all() if team_id else None
+#     if not goals:
+#         result = {
+#             'team_id': team.team_id,
+#             'team_name': team.name,
+#             'description': team.description,
+#             'members': members,
+#         }
+#         return jsonify({'message': 'there is no goals for the team', 'result': result}), 200
+#     goals_list = []
+#     for goal in goals:
+#         goal_object = {
+#             'title': goal.title,
+#             'progress_percentage': goal.progress_percentage
+#         }
+#         goals_list.append(goal_object)
+
+#     result = {
+#         'team_id': team.team_id,
+#         'team_name': team.name,
+#         'description': team.description,
+#         'members': members,
+#         'goals': goals_list
+#     }
+#     return jsonify(result), 200
+
+
+# # 删除团队
+# @bp.route('/api/teams/delete_team', methods=['GET'])
+# def delete_team():
+#     team_id = request.args.get('team_id')
+#     team = Team.query.get(team_id)
+#     if not team:
+#         return jsonify({'message': 'Team not found'}), 404
+#     else:
+#         db.session.delete(team)
+#         db.session.commit()
+#         return jsonify({'message': 'Team deleted'}), 200
