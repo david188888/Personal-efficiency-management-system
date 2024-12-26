@@ -595,6 +595,33 @@ def get_task_template(id):
     return jsonify({'message': "Task Template doesn't found"}), 404
 
 
+
+
+#通过goal_idh获得task列表
+@bp.route('/api/tasks/get_task_by_goal_id', methods=['GET'])
+def get_task_by_goal_id():
+    goal_id = request.args.get('goal_id')
+    tasks = Task.query.filter_by(goal_id=goal_id)
+    task_object_list = []
+    for task in tasks:
+        task_object = {
+            'task_id': task.task_id,
+            'title': task.title,
+            'description': task.description,
+            'start_time': task.start_time.isoformat() if task.start_time else None,
+            'end_time': task.end_time.isoformat() if task.end_time else None,
+            'expected_completion_time': task.expected_completion_time.isoformat() if task.expected_completion_time else None,
+            'priority': task.priority,
+            'point': task.point,
+            'category_id': task.category_id,
+            'repeat_cycle': task.repeat_cycle,
+            'completed': task.completed,
+        }
+        task_object_list.append(task_object)
+    return jsonify({'task_list': task_object_list}), 200
+
+
+
 # 通过title，查询task的详细信息
 @bp.route('/api/tasks/get_task', methods=['GET'])
 def get_task():
