@@ -14,7 +14,14 @@ def add_user():
     username = data.get('username', '')
     password = data.get('password', '')
     email = data.get('email', '')
-    level_id = int(data.get('level_id', None)) if data.get('level_id') is not None else None
+    level_id = int(data.get('level_id', None)) if data.get('level_id') is not None else 1
+
+    # 检查 level_id 是否存在，如果不存在则插入新的 Level 记录
+    if level_id is not None and not Level.query.get(level_id):
+        new_level = Level(level_id=level_id)
+        db.session.add(new_level)
+        db.session.commit()
+
     new_user = User(
         username=username,
         password_hash=password,
@@ -433,6 +440,7 @@ def get_goal_progress(id):
 @bp.route('/api/tasks/add_change_task', methods=['POST'])
 def add_change_task():
     data = request.json
+    user_id = int(data.get('user_id', None)) if data.get('user_id') is not None else None
     task_id = int(data.get('task_id', None)) if data.get('task_id') is not None else None
     goal_id = int(data.get('goal_id', None)) if data.get('goal_id') is not None else None
     title = data.get('title', '')
@@ -461,6 +469,7 @@ def add_change_task():
 
     if task:
         try:
+            task.user_id = user_id
             task.goal_id = goal_id
             task.title = title
             task.description = description
@@ -509,6 +518,7 @@ def add_change_task():
     else:
         try:
             new_task = Task(
+                user_id=user_id,
                 goal_id=goal_id,
                 title=title,
                 description=description,
@@ -529,6 +539,7 @@ def add_change_task():
             message = 'Task Created'
             #将new_task转化为json格式
             task_dict = {
+                'user_id':new_task.user_id,
                 'task_id': new_task.task_id,
                 'title': new_task.title,
                 'goal_id': new_task.goal_id,
@@ -964,9 +975,6 @@ def finish_task():
                 if level<max_level:
                     level+=1
 
-            else:
-                points+=1
-
             user_point_history= UserPointsHistory(
                 user_id=user.user_id,
                 task_id=task_id,
@@ -980,7 +988,7 @@ def finish_task():
         db.session.commit()
     else:
         return jsonify({"message": "Task doesn't exist " }), 200
-    return jsonify({"message": 'Task finished! You earned points! '}), 200
+    return jsonify({"message": 'Task finished! You earned points! ','points': points, 'level': level}), 200
 
 # 在某一个日期范围内（以start_time 或end_time为区间）内搜索所有任务
 

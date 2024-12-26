@@ -15,6 +15,18 @@ import './clock.css'
   const intervalRef = useRef(null);
   const [pauseTime, setPauseTime] = useState(null);
 
+  useEffect(() => {
+    //获取 duration
+    const duration = localStorage.getItem('duration');
+    if (duration) {
+      console.log('duration', duration);
+      const durationInMs = parseInt(duration, 10)*1000;
+      setEndTime(Date.now() + durationInMs+2000); // 设置 endTime 为当前时间加上 duration
+      setIsStopButtonDisabled(false);
+      setIsResetButtonDisabled(false);
+    }
+  }, []);
+
   const formatTime = (timeInMs) => {
     const hours = Math.floor(timeInMs / 3600000);
     const minutes = Math.floor((timeInMs % 3600000) / 60000);
@@ -50,7 +62,7 @@ import './clock.css'
       clearInterval(intervalRef.current);
     }
     return () => clearInterval(intervalRef.current);
-  }, [endTime, stopBtnClicked]);
+  }, [endTime, stopBtnClicked, remainingTime]);
 
   const handleSetClick = () => { 
     setTaskDescription('');

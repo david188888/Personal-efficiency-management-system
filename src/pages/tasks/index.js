@@ -8,8 +8,10 @@ import {
   Select,
   DatePicker,
   InputNumber,
-  Popconfirm
+  Popconfirm,
+  message
 } from 'antd'
+import { useNavigate } from 'react-router-dom'
 import {ReconciliationTwoTone } from '@ant-design/icons'
 import './tasks.css'
 import { useForm } from 'antd/es/form/Form'
@@ -19,6 +21,7 @@ import axios from 'axios'
 import { render } from '@testing-library/react'
 
 const Task = () => {
+    const navigate = useNavigate();
     const [listData, setListData] = useState({
             title: ''
         })
@@ -26,6 +29,7 @@ const Task = () => {
     const [modelType,setModelType] = useState(0)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [searchForm] = useForm()
+    
     // 搜索
     const handleSearch = (e) => {
         console.log(e)
@@ -93,6 +97,7 @@ const Task = () => {
             render:(recordData) => {
                 return (
                     <div className='flex-box'>
+                        <Button type="primary" onClick={()=>{executeTask(recordData)}}>Start</Button>
                         <Button  type="primary" onClick={()=>{handleClick('edit',recordData)}}>Edit</Button>
                         <Popconfirm
                         title="Tip"
@@ -119,7 +124,16 @@ const Task = () => {
 
     // 获取表单实例 以清除已提交、删除的填写字段
     const [form] =Form.useForm()
+    
 
+    // 跳转执行任务倒计时
+    const executeTask = (recordData) => {
+        const duration = dayjs(recordData.end_time).diff(dayjs(recordData.start_time), 'second');
+        // console.log('持续时间',recordData.end_time,recordData.start_time,duration)
+        localStorage.setItem('duration',duration)
+        // console.log('duration',localStorage.getItem('duration'))
+        navigate('/mall');
+    }
     // 点击新增
     const handleClick = (type, recordData) => {
         setIsModalOpen(!isModalOpen)
@@ -147,6 +161,7 @@ const Task = () => {
             values.start_time = dayjs(values.start_time).format('YYYY-MM-DDTHH:mm:ss');
             values.end_time = dayjs(values.end_time).format('YYYY-MM-DDTHH:mm:ss');
             values.user_id = localStorage.getItem('token');
+           
 
             console.log('提交的数据:', values);
 
@@ -184,12 +199,30 @@ const Task = () => {
 
 
   // handleFinish函数，用于将指定记录的status设置为1
-  const handleFinish = ({task_id} ) => {
-    setTableData(prevData =>
-      prevData.map(record =>
-        record.task_id ===  task_id ? { ...record, status: 1 } : record
-      )
-    );
+  const handleFinish = async ({task_id} ) => {
+    const user_id = localStorage.getItem('token');
+    console.log('完成task的用户',user_id);
+    try{
+        const response = await axios.get(baseUrl + `/api/tasks/finish_task?task_id=${task_id}`);
+
+        if (response.status === 200) {
+            console.log('完成task的返回',response)
+            const {level,points} = response.data;
+            message.success(`任务完成，你拥有${points}积分，等级提升至${level}`);
+            setTableData(prevData =>
+                prevData.map(record =>
+                  record.task_id ===  task_id ? { ...record, status: 1 } : record
+                )
+              );
+            // 输出用户当前的 level 和 point
+            console.log(`User Level: ${level}, User Point: ${points}`);
+        } else {
+            message.error('任务未完成',response.data);
+        }
+    } catch (error) {
+        console.error('There was an error!', error);
+    }
+    
   };
 
     //删除
