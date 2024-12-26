@@ -313,6 +313,30 @@ const Target = () => {
         );
       };
 
+      const handleTemplateSelect = (template) => {
+        const today = dayjs();
+        const oneYearLater = today.add(1, 'year');
+        if (template === 'career') {
+          form.setFieldsValue({
+            title: '职业晋升',
+            category: 1,
+            start_date: today,
+            end_date: oneYearLater,
+            status: 2,
+            progress: 1,
+          });
+        } else if (template === 'study') {
+          form.setFieldsValue({
+            title: '学业发展',
+            category: 0,
+            start_date: today,
+            end_date: oneYearLater,
+            status: 2,
+            progress: 1,
+          });
+        }
+      };
+    
     // 首次加载后调用后端接口返回数据
     useEffect(() => {
         getGoals()
@@ -465,6 +489,23 @@ const Target = () => {
     >
         <InputNumber placeholder="Please enter progress" />
     </Form.Item>
+
+    <Form.Item 
+        label="Template"
+        name="template"
+        rules={[
+            {
+                required: false,
+                message: 'You can select a template',
+            },
+        ]}>
+                <Button type='primary' key="career" onClick={() => handleTemplateSelect('career')}>
+                职业晋升
+              </Button>,
+              <Button type='primary' key="study" onClick={() => handleTemplateSelect('study')}>
+                学业发展
+              </Button>
+              </Form.Item>
 
 </Form>
             </Modal>
