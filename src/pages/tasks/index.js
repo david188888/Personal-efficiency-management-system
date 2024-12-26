@@ -30,6 +30,7 @@ const Task = () => {
     const handleSearch = (e) => {
         console.log(e)
         const url = baseUrl+`/api/tasks/get_task?title=${e.keyword}`;
+        console.log(e.keyword);
         axios.get(url)
         .then(response => {
           // 处理返回的数据
@@ -257,6 +258,16 @@ const Task = () => {
         <Input placeholder='Please enter task name'></Input>
     </Form.Item>
 
+    <Form.Item label='Goal id' name='goal_id'
+        rules={[
+            {
+                required: true,
+                message: 'Please enter goal id',
+            },
+        ]}>
+        <Input placeholder='Please enter goal id'></Input>
+    </Form.Item>
+ 
     <Form.Item
         label="Start time"
         name="start_time"
