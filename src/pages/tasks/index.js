@@ -258,6 +258,16 @@ const Task = () => {
         <Input placeholder='Please enter task name'></Input>
     </Form.Item>
 
+    <Form.Item label='Goal id' name='goal_id'
+        rules={[
+            {
+                required: true,
+                message: 'Please enter goal id',
+            },
+        ]}>
+        <Input placeholder='Please enter goal id'></Input>
+    </Form.Item>
+ 
     <Form.Item
         label="Start time"
         name="start_time"

@@ -24,6 +24,7 @@ const Target = () => {
           title: ''
         })
     const [tableData, setTableData] = useState([])
+    const [children,setChildren]= useState([]) // 初始化子目标为空数组
     // 0（新增）1（编辑）
     const [modelType,setModelType] = useState(0)
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -153,16 +154,17 @@ const Target = () => {
       const handleOk = async () => {
         try {
           const values = await form.validateFields();
-          
           //日期参数
-           
           values.start_date = dayjs(values.start_date).format('YYYY-MM-DDTHH:mm:ss') ;
           values.end_date = dayjs(values.end_date).format('YYYY-MM-DDTHH:mm:ss') ;
           values.user_id = localStorage.getItem('token');
-          values.parent_goal_id = null;
           console.log('提交字段',values)
-        
-        const url = baseUrl+'/api/goals/add_change_goal';
+          if (values.parent_goal_id && modelType === 0) {
+            var url = baseUrl+'/api/goals/add_subgoal';
+            
+          } else {
+            var url = baseUrl+'/api/goals/add_change_goal';
+          } 
         try {
             const response = await axios.post(url, values);
             console.log('服务器响应:', response);
@@ -172,8 +174,8 @@ const Target = () => {
         }
           // 关闭弹窗并更新列表数据
           handleCancel();
-          getGoals() // 用异步确保等待 getGoals 函数解析为数组
-          
+          await getGoals(); // 用异步确保等待 getGoals 函数解析为数组
+          await getsubGoal(values.parent_goal_id); // 更新子目标数据
         } catch (err) {
           console.error('Validation or API call failed:', err);
         }
@@ -196,6 +198,7 @@ const Target = () => {
                 ...item,
                 start_date: dayjs(item.start_date).format('YYYY-MM-DD'),
                 end_date: dayjs(item.end_date).format('YYYY-MM-DD')
+                
               }))
             console.log('Goals返回',formattedData)
             setTableData(formattedData)
@@ -206,8 +209,27 @@ const Target = () => {
         }
     };
     
+    const getsubGoal = async (record) => {
+        const url = baseUrl+`/api/goals/get_subgoal?parent_goal_id=${record}`;
+        try {
+            const response = await axios.get(url);
+            const formattedData = response.data.map(item => ({
+                ...item,
+                start_date: dayjs(item.start_date).format('YYYY-MM-DD'),
+                end_date: dayjs(item.end_date).format('YYYY-MM-DD'),
+                
+              }))
+            console.log('子Goal返回',formattedData)
+            setChildren(formattedData)   
+        } catch (error) {
+            console.error('Error fetching goals:', error.response ? error.response.data : error.message);
+            throw error; // 重新抛出错误
+        }
+    };
     
-    
+    useEffect(() => {
+        setChildren(children)
+    },[children])
 
   // handleFinish函数，用于将指定记录的status设置为1
   const handleFinish = ({goal_id} ) => {
@@ -232,7 +254,50 @@ const Target = () => {
             });
     };
     
- 
+    const onExpand = async (expanded, record) => {
+        if (expanded) {
+          // 如果行被展开，且子目标数据还未获取，则获取子目标数据
+          if (!record.children) {
+            try {
+            await getsubGoal(record.goal_id);
+            console.log('父目标id',record.goal_id)
+            } catch (error) {
+              console.error('Error fetching subgoals:', error);
+            }
+          }
+        }
+      };
+      
+    const expandedRowRender = (record) => {
+        const subGoals = children.filter(item => item.parent_goal_id === record.goal_id);
+
+        // 检查当前记录是否有子目标
+        const hasChildren = subGoals && subGoals.length > 0;
+        return (
+            <div>
+            {hasChildren ? (
+              // 如果有子目标，渲染子目标列表，并在下方添加 "添加子目标" 按钮
+              <div>
+                <Table
+                  columns={columns} // 子目标的列定义，可能需要根据实际情况调整
+                  dataSource={subGoals}
+                  rowKey="goal_id"
+                  pagination={false} // 子目标列表可能不需要分页
+                />
+                <Button type="primary" onClick={() => handleClick('add', record.goal_id)}>
+                  + Add Subtarget
+                </Button>
+              </div>
+            ) : (
+              // 如果没有子目标，只渲染 "添加子目标" 按钮
+              <Button type="primary" onClick={() => handleClick('add', record.goal_id)}>
+                + Add Subtarget
+              </Button>
+            )}
+          </div>
+        );
+      };
+
     // 首次加载后调用后端接口返回数据
     useEffect(() => {
         getGoals()
@@ -263,7 +328,13 @@ const Target = () => {
                 </Form>
             </div>
             
-         <Table style={{marginTop: '20px'}} columns={columns} dataSource={tableData} rowKey={"id"}></Table>
+         <Table style={{marginTop: '20px'}} columns={columns} dataSource={tableData} rowKey={"id"}
+            expandable={{
+        expandedRowRender,
+        rowExpandable: record => record.name !== 'Not Expandable',
+        onExpand,
+      }}
+          ></Table>
          <Modal
            open = {isModalOpen}
            title={modelType === 1 ? 'Edit' : 'Add'}
@@ -286,6 +357,16 @@ const Target = () => {
             {
                 required: true,
                 message: 'Please enter target name',
+            },
+        ]}>
+        <Input placeholder='Please enter target name'></Input>
+    </Form.Item>
+
+    <Form.Item label='Parent goal id' name='parent_goal_id'
+        rules={[
+            {
+                required: true,
+                message: 'Please enter parent goal id',
             },
         ]}>
         <Input placeholder='Please enter target name'></Input>
