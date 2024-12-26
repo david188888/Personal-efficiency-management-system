@@ -25,6 +25,8 @@ const Target = () => {
         })
     const [tableData, setTableData] = useState([])
     const [children,setChildren]= useState([]) // 初始化子目标为空数组
+    const [visible, setVisible] = useState(false); // 下面弹窗的显示状态
+    const [modalData, setModalData] = useState(null); // 目标对应任务
     // 0（新增）1（编辑）
     const [modelType,setModelType] = useState(0)
     const [isModalOpen, setIsModalOpen] = useState(false)
@@ -41,6 +43,19 @@ const Target = () => {
         console.log('查询结果',response.data );
         setTableData( response.data.goal_list ); // 假设返回的数据结构中有一个键为goal_list的数组
       })
+  }
+
+  const queryTask =(recordData) =>{
+    const {goal_id} = recordData
+    // console.log('goal_id',goal_id,recordData)
+    const url=baseUrl+`/api/tasks/get_task_by_goal_id?goal_id=${goal_id}`
+    axios.get(url)
+    .then(response => {
+      console.log('目标对应任务',response.data.task_list );
+      setModalData(response.data.task_list); // 将对应任务存到 modalData
+      console.log('modalData',modalData)
+      setVisible(true); // 显示弹窗
+    })
   }
   
 
@@ -101,7 +116,7 @@ const Target = () => {
                 return (
                     <div className='flex-box'>
                         <Button  type="primary" onClick={()=>{handleClick('edit',recordData)}}>Edit</Button>
-                    
+                        <Button  type="primary" onClick={()=>{queryTask(recordData)}}>Query Task</Button>
                         <Popconfirm 
                         title="Tip"
                         description="Mark the goal as achieved"
@@ -282,7 +297,7 @@ const Target = () => {
                   columns={columns} // 子目标的列定义，可能需要根据实际情况调整
                   dataSource={subGoals}
                   rowKey="goal_id"
-                  pagination={false} // 子目标列表可能不需要分页
+                  pagination={false} // 子目标列表不需要分页
                 />
                 <Button type="primary" onClick={() => handleClick('add', record.goal_id)}>
                   + Add Subtarget
@@ -369,7 +384,7 @@ const Target = () => {
                 message: 'Please enter parent goal id',
             },
         ]}>
-        <Input placeholder='Please enter target name'></Input>
+        <Input placeholder='Please enter parent goal id'></Input>
     </Form.Item>
 
     <Form.Item
@@ -452,9 +467,26 @@ const Target = () => {
     </Form.Item>
 
 </Form>
-
-
             </Modal>
+
+            <Modal
+        title="Task Details"
+        open={visible}
+        onCancel={() => setVisible(false)}
+        footer={null}
+      >
+        {modalData && modalData.map((task, index) => (
+          <div key={index}>
+            <p>Title: {task.title}</p>
+            <p>Start Time: {dayjs(task.start_time).format('YYYY-MM-DD HH:mm:ss')}</p>
+            <p>End Time: {dayjs(task.end_time).format('YYYY-MM-DD HH:mm:ss')}</p>
+            <p>Duration: {dayjs(task.end_time).diff(dayjs(task.start_time), 'day')} day</p>
+            <p>Priority: {task.priority}</p>
+          </div>
+        )
+        )}
+      </Modal>
+
         </div>
     )
 }
