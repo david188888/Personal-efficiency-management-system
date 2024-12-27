@@ -61,7 +61,7 @@ const Task = () => {
         },
         {
             title:'Category',
-            dataIndex:'category',
+            dataIndex:'category_id',
             render:(val) =>{
               if (val === 0) {
                 return 'Study';
@@ -73,20 +73,21 @@ const Task = () => {
             filters:[
                 {
                     text:'Study',
-                    value:'Study'
+                    value:0
                 },
                 {
                     text:'Career',
-                    value:'Career'
+                    value:1
                 },
                 {
                     text:'Others',
-                    value:'Others'
+                    value:2
                 }
             ],
             filterMode: 'tree',
             filterSearch: true,
-            onFilter: (value, record) => record.category.startsWith(value),
+            onFilter: (value, record) => record.category_id === value,
+
         },
         {
           title:'Status',
@@ -101,13 +102,15 @@ const Task = () => {
             filters:[
                 {
                     text:'Pending',
-                    value:0
+                    value:false
                 },
                 {
                     text:'Done',
-                    value:1
+                    value:true
                 }
-            ]
+            ],
+            filterSearch: true,
+            onFilter: (value, record) => record.completed === value,
         },
         {
           title:'Priority',
@@ -263,6 +266,10 @@ const Task = () => {
             });
     };
 
+    const onChange = (pagination, filters, sorter, extra) => {
+        console.log('params', pagination, filters, sorter, extra);
+      };
+
     // 首次加载后调用后端接口返回数据
     useEffect(() => {
         getTasks()
@@ -289,7 +296,7 @@ const Task = () => {
                 </Form.Item>
                 </Form>
             </div>
-         <Table style={{marginTop: '20px'}} columns={columns} dataSource={tableData} rowKey={"id"}></Table>
+         <Table style={{marginTop: '20px'}} onChange={onChange} columns={columns} dataSource={tableData} rowKey={"id"}></Table>
          <Modal
            open = {isModalOpen}
            title={modelType === 1 ? 'Edit' : 'Add'}
