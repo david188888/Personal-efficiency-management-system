@@ -69,19 +69,45 @@ const Task = () => {
                   return 'Career';
               }
               return 'Others'
-              }
+              },
+            filters:[
+                {
+                    text:'Study',
+                    value:'Study'
+                },
+                {
+                    text:'Career',
+                    value:'Career'
+                },
+                {
+                    text:'Others',
+                    value:'Others'
+                }
+            ],
+            filterMode: 'tree',
+            filterSearch: true,
+            onFilter: (value, record) => record.category.startsWith(value),
         },
         {
           title:'Status',
-          dataIndex:'status',
+          dataIndex:'completed',
           render:(val) =>{
-              if (val === 0) {
-                return 'Doing';
-              } else if (val === 1) {
+              if (val === false) {
+                return 'Pending';
+              } else if (val === true) {
                   return 'Done';
               }
-              return 'Pending'
-              }
+              },
+            filters:[
+                {
+                    text:'Pending',
+                    value:0
+                },
+                {
+                    text:'Done',
+                    value:1
+                }
+            ]
         },
         {
           title:'Priority',
@@ -329,7 +355,7 @@ const Task = () => {
 
     <Form.Item
         label="Category"
-        name="category"
+        name="category_id"
         rules={[
             {
                 required: true,
@@ -349,7 +375,7 @@ const Task = () => {
 
     <Form.Item
         label="Status"
-        name="status"
+        name="completed"
         rules={[
             {
                 required: true,
@@ -360,9 +386,8 @@ const Task = () => {
         <Select
             placeholder="Please select status"
             options={[
-                { value: 0, label: 'Doing' },
-                { value: 1, label: 'Done' },
-                { value: 2, label: 'Pending' }
+                { value: 0, label: 'Pending' },
+                { value: 1, label: 'Done' }
             ]}
         ></Select>
     </Form.Item>
