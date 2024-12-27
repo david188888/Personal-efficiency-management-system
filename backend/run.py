@@ -292,8 +292,8 @@ def add_subgoal():
 
 @bp.route('/api/goals/get_goals', methods=['GET'])
 def get_goals():
-    goals_list = Goal.query.filter_by(parent_goal_id=None)
-
+    user_id = request.args.get('user_id')
+    goals_list = Goal.query.filter_by(user_id=user_id).all()
     def build_goal_tree(goal):
         goal_object = {
             'user_id': goal.user_id,
@@ -578,8 +578,8 @@ def add_change_task():
 
 @bp.route('/api/tasks/get_tasks', methods=['GET'])
 def get_tasks():
-    tasks_object_list = Task.query.all()
-
+    user_id = request.args.get('user_id')
+    tasks_object_list = Task.query.filter_by(user_id=user_id).all()
     def build_task_chain(task, task_list):
         task_chain = {
             'task_id': task.task_id,
