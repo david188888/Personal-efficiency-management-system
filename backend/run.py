@@ -258,12 +258,14 @@ def get_subgoal():
 @bp.route('/api/goals/add_subgoal', methods=['POST'])
 def add_subgoal():
     data = request.json
-    parent_goal_id = int(data.get('parent_goal_id', None)) if data.get('parent_goal_id') is not None else None
+    title  = data.get('goal_title', '')
+    sub_goal = Goal.query.filter_by(title=title).first()
+    sub_goal_id = sub_goal.goal_id if sub_goal else None
     title = data.get('title', '')
     description = data.get('description', '')
     start_date = data.get('start_date', None)
     start_date = datetime.strptime(start_date,
-                                   '%Y-%m-%dT%H:%M:%S') if start_date is not None and start_date != '' else None
+                                    '%Y-%m-%dT%H:%M:%S') if start_date is not None and start_date != '' else None
     end_date = data.get('end_date', None)
     end_date = datetime.strptime(end_date, '%Y-%m-%dT%H:%M:%S') if end_date is not None and end_date != '' else None
     user_id = int(data.get('user_id', None)) if data.get('user_id') is not None else None
@@ -271,19 +273,20 @@ def add_subgoal():
     category = int(data.get('category', None)) if data.get('category') is not None else None
     progress = int(data.get('progress', None)) if data.get('progress') is not None else None
     new_goal = Goal(
-        title=title,
-        description=description,
-        start_date=start_date,
-        end_date=end_date,
-        user_id=user_id,
-        parent_goal_id=parent_goal_id,
-        status=status,
-        category=category,
-        progress=progress
-    )
+            title=title,
+            description=description,
+            start_date=start_date,
+            end_date=end_date,
+            user_id=user_id,
+            parent_goal_id=sub_goal_id,
+            status=status,
+            category=category,
+            progress=progress
+        )
     db.session.add(new_goal)
     db.session.commit()
     return jsonify({'message': 'SubGoal created'}), 201
+
 
 
 
@@ -442,7 +445,9 @@ def add_change_task():
     data = request.json
     user_id = int(data.get('user_id', None)) if data.get('user_id') is not None else None
     task_id = int(data.get('task_id', None)) if data.get('task_id') is not None else None
-    goal_id = int(data.get('goal_id', None)) if data.get('goal_id') is not None else None
+    goal_title = data.get('goal_title', '')
+    goal = Goal.query.filter_by(title=goal_title).first()
+    goal_id = goal.goal_id if goal else None
     title = data.get('title', '')
     description = data.get('description', '')
     start_time = data.get('start_time', None)
