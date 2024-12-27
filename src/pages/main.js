@@ -6,6 +6,7 @@ import CommonHeader from "../components/commonHeader";
 import CommonTag from "../components/CommonTag";
 import { RouterAuth } from "../router/routerAuth";
 import {useSelector } from 'react-redux'
+import UserContext from './Usercontext';
 
 const { Header, Sider, Content } = Layout;
 const Main = () => {
@@ -16,7 +17,7 @@ const Main = () => {
 
     //在Layout用钩子useSelector函数获取store 展开收起的状态 再父子组件传参 传进Aside和Header
     const collapsed = useSelector((state) => state.tab.isCollapse)
-
+    const user_id = localStorage.getItem('token');
     return (
         <RouterAuth>
         <Layout className="main-container ">
@@ -25,7 +26,7 @@ const Main = () => {
         <Layout>
             <CommonHeader collapsed={collapsed}/>
              <CommonTag/>
-
+             <UserContext.Provider value={user_id}>
             <Content
             style={{
                 margin: '24px 16px',
@@ -39,6 +40,7 @@ const Main = () => {
             <Outlet/>
 
             </Content>
+            </UserContext.Provider>
         </Layout>
         </Layout>
         </RouterAuth>

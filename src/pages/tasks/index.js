@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState,useContext } from 'react'
 import {
   Button,
   Form,
@@ -18,9 +18,10 @@ import { useForm } from 'antd/es/form/Form'
 import { getUser, addUser, editUser, deleteUser } from '../../api'
 import dayjs from 'dayjs'
 import axios from 'axios'
-import { render } from '@testing-library/react'
+import UserContext from '../Usercontext'
 
 const Task = () => {
+    const user_id = useContext(UserContext);
     const navigate = useNavigate();
     const [listData, setListData] = useState({
             title: ''
@@ -213,7 +214,9 @@ const Task = () => {
       const baseUrl = 'http://127.0.0.1:8080'
 
     const getTasks = async () => {
-        const url = baseUrl+'/api/tasks/get_tasks';
+    
+        console.log('当前用户id',{user_id})
+        const url = baseUrl+`/api/tasks/get_tasks?user_id=${user_id}`;
         try {
             const response = await axios.get(url);
             const tasksData=response.data.flatMap(item => item[0]);
@@ -324,14 +327,14 @@ const Task = () => {
         <Input placeholder='Please enter task name'></Input>
     </Form.Item>
 
-    <Form.Item label='Goal id' name='goal_id'
+    <Form.Item label='Goal title' name='goal_tile'
         rules={[
             {
                 required: true,
-                message: 'Please enter goal id',
+                message: 'Please enter goal name',
             },
         ]}>
-        <Input placeholder='Please enter goal id'></Input>
+        <Input placeholder='Please enter goal name'></Input>
     </Form.Item>
  
     <Form.Item

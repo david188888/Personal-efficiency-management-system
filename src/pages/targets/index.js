@@ -401,14 +401,14 @@ const Target = () => {
         <Input placeholder='Please enter target name'></Input>
     </Form.Item>
 
-    <Form.Item label='Parent goal id' name='parent_goal_id'
+    <Form.Item label='Parent Target name' name='parent_goal_title'
         rules={[
             {
-                required: true,
-                message: 'Please enter parent goal id',
+                required: false,
+                message: 'Please enter parent target title',
             },
         ]}>
-        <Input placeholder='Please enter parent goal id'></Input>
+        <Input placeholder='Please enter parent target name'></Input>
     </Form.Item>
 
     <Form.Item

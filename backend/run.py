@@ -1110,7 +1110,7 @@ def time_manage_plot():
     end_time = datetime.strptime(end_time, '%Y-%m-%dT%H:%M:%S')
     
     tasks = Task.query.filter(
-        Task.start_time.between(start_time, end_time) | Task.end_time.between(start_time, end_time)).all()
+        Task.start_time.between(start_time, end_time) & Task.end_time.between(start_time, end_time)).all()
     
     total_duration = timedelta()
     task_duration = {}
