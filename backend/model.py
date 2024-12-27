@@ -110,15 +110,6 @@ class GoalTemplate(db.Model):
     user = db.relationship('User',back_populates='goal_templates')
 
 
-class Category(db.Model):
-    __tablename__ = 'categories'
-
-    category_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
-    description = db.Column(db.Text, nullable=True)
-    tasks = db.relationship('Task',back_populates='category')
-
-
 class Task(db.Model):
     __tablename__ = 'tasks'
 
@@ -134,13 +125,12 @@ class Task(db.Model):
     completed = db.Column(db.Boolean, default=False)
 
     goal_id = db.Column(db.Integer, db.ForeignKey('goals.goal_id'))
-    category_id = db.Column(db.Integer, db.ForeignKey('categories.category_id'))
+    category_id = db.Column(db.Integer, nullable=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     reminder_24h_sent = db.Column(db.Boolean, default=False)  # reminder sent 24h before the task
     reminder_12h_sent = db.Column(db.Boolean, default=False)  # reminder sent 12h before the task
     front_task_id = db.Column(db.Integer, db.ForeignKey('tasks.task_id'), nullable=True)
     next_task = db.relationship('Task', backref=db.backref('front_task', remote_side=[task_id]), uselist=False)
-    category = db.relationship('Category', back_populates='tasks')
     goal = db.relationship('Goal', back_populates='tasks')
     points_history = db.relationship('UserPointsHistory',back_populates='task')
     pomodoro_session = db.relationship('PomodoroSession',back_populates='task')
