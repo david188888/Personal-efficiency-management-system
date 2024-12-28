@@ -30,6 +30,7 @@ const Target = () => {
     // 0（新增）1（编辑）
     const [modelType,setModelType] = useState(0)
     const [isModalOpen, setIsModalOpen] = useState(false)
+    const [expandedRows,setExpandedRows] = useState([]) // 初始化展开行
 
     // 创建form搜索实例
     const [searchForm] = useForm()
@@ -226,7 +227,7 @@ const Target = () => {
     };
     
     const getsubGoal = async (record) => {
-        const url = baseUrl+`/api/goals/get_subgoal?parent_goal_id=${record}`;
+        const url = `${baseUrl}/api/goals/get_subgoal?parent_goal_id=${record}`;
         try {
             const response = await axios.get(url);
             const formattedData = response.data.map(item => ({
@@ -271,6 +272,7 @@ const Target = () => {
     };
     
     const onExpand = async (expanded, record) => {
+      console.log('record',record)
         if (expanded) {
           // 如果行被展开，且子目标数据还未获取，则获取子目标数据
           if (!record.children) {
@@ -282,6 +284,7 @@ const Target = () => {
             }
           }
         }
+        setExpandedRows(prevRows => expanded ? [...prevRows, record.title] : prevRows.filter(title => title !== record.title));
       };
       
     const expandedRowRender = (record) => {
@@ -373,6 +376,7 @@ const Target = () => {
         expandedRowRender,
         rowExpandable: record => record.name !== 'Not Expandable',
         onExpand,
+        // expandedRowKeys: expandedRows, // 设置展开的行
       }}
           ></Table>
          <Modal
