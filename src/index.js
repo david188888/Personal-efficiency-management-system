@@ -6,7 +6,7 @@ import reportWebVitals from './reportWebVitals';
 import Router from './router'
 import { Provider} from 'react-redux'
 import store from './store'
-import'./api/mock'
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

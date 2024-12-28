@@ -1,6 +1,6 @@
 import React,{useEffect,useState} from "react";
 import * as Icon from "@ant-design/icons";
-import {getData} from "../../api";
+import {getData} from "../../api/index";
 import MyEcharts from "../../components/echarts";
 import axios from "axios";
 import dayjs from "dayjs";
@@ -51,7 +51,7 @@ const Statistics = () => {
 
         getData().then(res => {
             // console.log('1',res.data.data)
-            const {orderData,userData,videoData } = res.data.data
+            const {orderData,userData,videoData } = res.data
             console.log('可视化数据',orderData,userData,videoData) // 分别是折线图 柱状图 饼图
           
 
