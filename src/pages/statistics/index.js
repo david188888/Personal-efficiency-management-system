@@ -9,42 +9,37 @@ const Statistics = () => {
     
   //定义一周每天的任务总时长
   const [totalHours,setTotalHours] = useState([])
-
-  //定义一周每天的任务数量
-  const getTimeperday = async () =>{
-      // 计算过去7天的开始时间和今天的结束时间
-      const today = new Date();
-      const start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6);
-      const end = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
-  
-      // 格式化日期为 ISO 8601 字符串
-      const start_time_str = start.toISOString().slice(0, -5);
-      const end_time_str = end.toISOString().slice(0, -5);
-  
-      // 构造请求URL
-      const baseUrl = 'http://127.0.0.1:8080'
-      const  url = `${baseUrl}/api/tasks/time_management_plot?start_time=${start_time_str}&end_time=${end_time_str}`;
-  
-      // 使用 axios 发送 GET 请求
-      axios.get(url)
-        .then(response => {
-          // 在这里处理返回的数据
-          console.log('请求每天任务时长',response.data);
-          // 遍历 response.data 并计算每个 duration 的小时数
-          const hours = response.data.map(item => {
-          const [hours, minutes, seconds] = item.duration.split(':').map(Number);
-          return parseFloat((hours + minutes / 60 + seconds / 3600).toFixed(2));
-        });
-         console.log('hours',hours)
-          setTotalHours(hours);
-        })
-        .catch(error => {
-          console.error('请求时长出错', error);
-        });
-  }
   
     useEffect(() => {
-      getTimeperday()
+         // 计算过去7天的开始时间和今天的结束时间
+    const today = new Date();
+    const start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6);
+    const end = new Date(today.getFullYear(), today.getMonth(), today.getDate(), 23, 59, 59);
+
+    // 格式化日期为 ISO 8601 字符串
+    const start_time_str = start.toISOString().slice(0, -5);
+    const end_time_str = end.toISOString().slice(0, -5);
+
+    // 构造请求URL
+    const baseUrl = 'http://127.0.0.1:8080'
+    const  url = `${baseUrl}/api/tasks/time_management_plot?start_time=${start_time_str}&end_time=${end_time_str}`;
+
+    // 使用 axios 发送 GET 请求
+    axios.get(url)
+      .then(response => {
+        // 在这里处理返回的数据
+        console.log('请求每天任务时长',response.data);
+        // 遍历 response.data 并计算每个 duration 的小时数
+        const hours = response.data.map(item => {
+        const [hours, minutes, seconds] = item.duration.split(':').map(Number);
+        return parseFloat((hours + minutes / 60 + seconds / 3600).toFixed(2));
+      });
+       console.log('hours',hours)
+        setTotalHours(hours);
+      })
+      .catch(error => {
+        console.error('请求时长出错', error);
+      });
     },[])
 
     useEffect(() => { //页面加载完成后才调用接口

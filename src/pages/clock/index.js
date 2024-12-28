@@ -14,12 +14,10 @@ import './clock.css'
   const [taskDescription, setTaskDescription] = useState('');
   const intervalRef = useRef(null);
   const [pauseTime, setPauseTime] = useState(null);
-  const [duration, setDuration] = useState(0);
 
   useEffect(() => {
     //获取 duration
-    setDuration(localStorage.getItem('duration'));
-    localStorage.removeItem('duration');
+    const duration = localStorage.getItem('duration');
     if (duration) {
       console.log('duration', duration);
       const durationInMs = parseInt(duration, 10)*1000;
@@ -27,7 +25,7 @@ import './clock.css'
       setIsStopButtonDisabled(false);
       setIsResetButtonDisabled(false);
     }
-  }, [duration]);
+  }, []);
 
   const formatTime = (timeInMs) => {
     const hours = Math.floor(timeInMs / 3600000);
