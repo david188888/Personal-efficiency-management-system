@@ -232,7 +232,6 @@ const Task = () => {
 
   // handleFinish函数，用于将指定记录的status设置为1
   const handleFinish = async ({task_id} ) => {
-    const user_id = localStorage.getItem('token');
     console.log('完成task的用户',user_id);
     try{
         const response = await axios.get(baseUrl + `/api/tasks/finish_task?task_id=${task_id}`);
