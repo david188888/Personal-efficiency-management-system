@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import {
   Button,
   Form,
@@ -16,10 +16,10 @@ import { getUser, addUser, editUser, deleteUser } from '../../api'
 import { useForm } from 'antd/es/form/Form'
 import dayjs from 'dayjs'
 import axios from 'axios'
-import { render } from '@testing-library/react'
+import UserContext from '../Usercontext'
 
 const Target = () => {
-    
+    const user_id = useContext(UserContext);
     const [listData, setListData] = useState({
           title: ''
         })
@@ -206,7 +206,8 @@ const Target = () => {
       
     
     const getGoals = async () => {
-        const url = baseUrl+'/api/goals/get_goals';
+        
+        const url = `${baseUrl}/api/goals/get_goals?user_id=${user_id}`;
         try {
             const response = await axios.get(url);
             const formattedData = response.data.map(item => ({
