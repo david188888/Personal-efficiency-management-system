@@ -11,10 +11,6 @@ const Login = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const baseUrl = 'http://127.0.0.1:8080';
 
-    if (localStorage.getItem('token')) {
-        return <Navigate to='/home' replace />
-    }
-
     const handleSubmit = (values) => {
         if (!values.password || !values.username) {
             return message.open({

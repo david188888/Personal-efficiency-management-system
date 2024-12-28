@@ -11,7 +11,7 @@ const Statistics = () => {
   const [totalHours,setTotalHours] = useState([])
 
   //定义一周每天的任务数量
-  const getTimeperday = async () =>{
+  const getTimeperday = () =>{
       // 计算过去7天的开始时间和今天的结束时间
       const today = new Date();
       const start = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6);
@@ -51,15 +51,15 @@ const Statistics = () => {
 
         getData().then(res => {
             // console.log('1',res.data.data)
-            const { tableData,orderData,userData,videoData } = res.data.data
-            console.log(tableData,orderData,userData,videoData)
-            // setTableData(tableData)
+            const {orderData,userData,videoData } = res.data.data
+            console.log('可视化数据',orderData,userData,videoData) // 分别是折线图 柱状图 饼图
+          
 
             // 给echarts传入数据前 进行数据组装
             const order = orderData
             // x轴数据
             const xData = order.date
-            const keyArray = Object.keys(orderData.data[0]) // 获取对象中的key 转为数组
+            const keyArray = Object.keys(orderData.data) // 获取对象中的key 转为数组
             // series数据
             const series = []
             keyArray.forEach(key => {

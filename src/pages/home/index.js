@@ -31,37 +31,37 @@ const columns = [
   const countData = [
     {
       "name": "Completed today",
-      "value": 'reading',
+      // "value": 'reading',
       "icon": "CheckCircleOutlined",
       "color": "#2ec7c9"
     },
     {
       "name": "To be finished today",
-      "value": 'writing notes',
+      // "value": 'writing notes',
       "icon": "ClockCircleOutlined",
       "color": "#ffb980"
     },
     {
       "name": "Not finished today.",
-      "value": 'coding',
+      // "value": 'coding',
       "icon": "CloseCircleOutlined",
       "color": "#5ab1ef"
     },
     {
       "name": "It was completed today",
-      "value": 'take the package',
+      // "value": 'take the package',
       "icon": "CheckCircleOutlined",
       "color": "#2ec7c9"
     },
     {
       "name": "To be finished today",
-      "value": 'hand out the form',
+      // "value": 'hand out the form',
       "icon": "ClockCircleOutlined",
       "color": "#ffb980"
     },
     {
       "name": "Not finished today.",
-      "value": 'send the email',
+      // "value": 'send the email',
       "icon": "CloseCircleOutlined",
       "color": "#5ab1ef"
     }
@@ -72,69 +72,22 @@ const iconToElement = (name) => React.createElement(Icon[name]);
 
 const Home = () => {
 
-    // 组件间传递series 创建echart响应式数据
-    const [echartData,setEchartData] = useState({})
-    //定义table数组
+    // 左下渲染表格的数据
     const [tableData,setTableData] = useState([])
 
     useEffect(() => { //页面加载完成后才调用接口
         getData().then(res => {
             // console.log('1',res.data.data)
-            const { tableData,orderData,userData,videoData } = res.data.data
-            console.log(tableData,orderData,userData,videoData)
+            const { tableData} = res.data.data
+            console.log('home数据',tableData)
             setTableData(tableData)
-
-            // 给echarts传入数据前 进行数据组装
-            const order = orderData
-            // x轴数据
-            const xData = order.date
-            const keyArray = Object.keys(orderData.data[0]) // 获取对象中的key 转为数组
-            // series数据
-            const series = []
-            keyArray.forEach(key => {
-                series.push({
-                    name: key,
-                    type: 'line',
-                    data: order.data.map(item => item[key])
-                })
-            }) 
-
-            // 数据组装完成后进行更新
-            setEchartData({
-              order:{
-                xData,
-                series
-              },
-              user:{
-                xData:userData.map(item => item.date),
-                series: [
-                  {
-                    name:'新增用户',
-                    data:userData.map(item => item.new),
-                    type:'bar'
-                  },
-                  {
-                    name:'活跃用户',
-                    data:userData.map(item => item.active),
-                    type:'bar'
-                  }
-                ]
-              },
-              video: {
-                series:[
-                  {
-                    data:videoData,
-                    type:'pie'
-                  }
-                ]
-              }
-            })
         })
         
       },[])
 
     const userImg = require("../../assets/images/avatar.jpg")
-
+    const currentDate = new Date();
+    const formattedDate = currentDate.toISOString().split('T')[0];
     
 
     return (
@@ -149,7 +102,7 @@ const Home = () => {
             </div>
           </div>
           <div className="login-info">
-            <p>Last time you logged in：<span> 2024-12-15 </span></p>
+            <p>Last time you logged in：<span>{formattedDate}</span></p>
          
           </div>
         </Card>
