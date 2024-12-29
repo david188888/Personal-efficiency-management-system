@@ -1,87 +1,126 @@
-## Migrate Database
-If you change the structure of update some items in your Database, you need to migrate them using Flask-Migrate in your root dictionary
-```python
-# If you are first time
-$ flask db init
+# Project Title
 
-#Then
-$ flask db migrate -m "Initial migration."
+**Web Application for Software System Design and Artitecture Assignment**
 
-# Finally
-$ flask db upgrade
+
+---
+
+## Table of Contents
+
+- [Project Overview](#project-overview)
+- [Technologies Used](#technologies-used)
+- [Installation](#installation)
+  - [1. Clone the Repository](#1-clone-the-repository)
+  - [2. Install Dependencies](#2-install-dependencies)
+  - [3. Start the Services](#3-start-the-services)
+- [Usage](#usage)
+  - [Logging In](#logging-in)
+  - [Account Information](#account-information)
+- [Contact](#contact)
+
+---
+
+## Project Overview
+
+This project is a full-stack web application developed as part of a group assignment for the Software System Design and Artitecture course. The application demonstrates the integration of a React front end with a Flask back end and a MySQL database, providing a seamless user experience with robust data management.
+
+---
+
+## Technologies Used
+
+- **Front End:** React
+- **Back End:** Flask (Python)
+- **Database:** MySQL
+- **Version Control:** Git
+
+---
+
+## Installation
+
+Follow the steps below to set up the project locally.
+
+### 1. Clone the Repository
+
+First, clone the project repository to your local machine using Git:
+
+```bash
+git clone [(https://github.com/david188888/Personal-efficiency-management-system/]
+```
+### 2. Install Dependencies
+
+#### Front End
+
+Navigate to the root directory and install the necessary packages using `npm`:
+
+```bash
+cd Personal-efficiency-management-system
+npm install
 ```
 
+#### Back End
+
+Navigate to the back-end directory and install the required Python packages using `pip`:
+
+```bash
+cd ../backend
+pip install -r requirements.txt
+```
+
+### 3. Start the Services
+
+#### Front End
+
+Start the React front-end service:
+
+```bash
+npm start
+```
+
+This will launch the front-end application, typically accessible at `http://localhost:3000`.
+
+#### Back End
+
+In a separate terminal window, navigate to the back-end directory and start the Flask server:
+
+```bash
+cd backend
+python app.py
+```
+
+The back-end service will run on `http://localhost:8080` by default.
+
+---
+
+## Usage
+
+### Logging In
+
+1. Open your web browser and navigate to the front-end application (e.g., `http://localhost:3000`).
+2. You will be presented with the login page.
+3. **Use the following credentials to log in:**
+   - **Username:** `root`
+   - **Password:** `1234567`
+
+### Account Information
+
+- **Purpose of Root Account:**
+  
+  The root account has been pre-configured with relevant tasks and goals to facilitate the visualization functionalities of the website. This setup allows the teacher to operate and inspect the website conveniently without needing to configure tasks manually.
+
+- **Registering a New Account:**
+  
+  If you prefer to create a new account, you can register freely using the registration interface available on the website. Please note that registering a new account will require you to manually add the relevant tasks and goals to ensure full functionality of the visualization features.
 
 
-# Getting Started with Create React App
+---
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Contact
 
-## Available Scripts
+For any questions or feedback, please contact:
 
-In the project directory, you can run:
+- **Name:** David
+- **Email:** david.liu1888888@gmail.com
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
-
-### `npm test`
-
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# Personal-efficiency-management-system
-Develop a comprehensive personal efficiency management system website, covering core functional modules such as goal management, task management, time management, and feedback and evaluation. Aimed at solving many existing problems of individuals in efficiency management
+```
