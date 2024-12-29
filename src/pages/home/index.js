@@ -1,8 +1,9 @@
-import React,{useEffect,useState} from "react";
+import React,{useEffect,useState,useContext} from "react";
 import {Row,Col,Card,Table} from "antd";
 import * as Icon from "@ant-design/icons";
 import "./home.css";
 import {getData} from "../../api";
+import UserContext from '../Usercontext'
 
 const columns = [
   {
@@ -61,6 +62,7 @@ const iconToElement = (name) => React.createElement(Icon[name]);
 
 
 const Home = () => {
+
 
     // 左下渲染表格的数据
     const [tableData,setTableData] = useState([])

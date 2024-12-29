@@ -1001,12 +1001,13 @@ def finish_task():
 def time_management():
     start_time = request.args.get('start_time')
     end_time = request.args.get('end_time')
+    
+    user_id = request.args.get('user_id')
 
     start_time = datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%S')
     end_time = datetime.strptime(end_time, '%Y-%m-%dT%H:%M:%S')
-
     tasks = Task.query.filter(
-        Task.start_time.between(start_time, end_time) | Task.end_time.between(start_time, end_time)).all()
+        (Task.start_time.between(start_time, end_time) | Task.end_time.between(start_time, end_time)),Task.user_id == user_id).all()
     # 计算每个任务在指定时间范围内的总工作时间的占比
 
     task_duration = {}
@@ -1032,8 +1033,7 @@ def time_management():
             'task_id': key,
             'task_name': Task.query.get(key).title,
             'total_work_time': duration,
-            'category': Category.query.get(Task.query.get(key).category_id).name if Task.query.get(
-                key).category_id else None,
+            'category': Task.query.get(key).category_id,
             'rate': rate,
         })
     try:
@@ -1046,13 +1046,15 @@ def task_proportion():
     try:
         start_time_str = request.args.get('start_time')
         end_time_str = request.args.get('end_time')
+        user_id = request.args.get('user_id')
         start_time = datetime.strptime(start_time_str, '%Y-%m-%dT%H:%M:%S')
         end_time = datetime.strptime(end_time_str, '%Y-%m-%dT%H:%M:%S')
 
         tasks = Task.query.filter(
             (Task.start_time.between(start_time, end_time)) |
             (Task.end_time.between(start_time, end_time)) |
-            ((Task.start_time <= start_time) & (Task.end_time >= end_time))
+            ((Task.start_time <= start_time) & (Task.end_time >= end_time)),
+            Task.user_id == user_id
         ).all()
 
         category_count = {}
@@ -1086,15 +1088,15 @@ def task_proportion():
 def time_management_bar():
     start_time = request.args.get('start_time') #这里的start_time和end_time 强制最近的一周就行了
     end_time = request.args.get('end_time')
-    
+    user_id = request.args.get('user_id')
     start_time = datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%S')
     end_time = datetime.strptime(end_time, '%Y-%m-%dT%H:%M:%S')
     
     tasks = Task.query.filter(
-        Task.start_time.between(start_time, end_time) | Task.end_time.between(start_time, end_time)).all()
+        Task.start_time.between(start_time, end_time) | Task.end_time.between(start_time, end_time),Task.user_id == user_id).all()
 
     goals = Goal.query.filter(
-        Goal.start_date.between(start_time, end_time) | Goal.end_date.between(start_time, end_time)).all()
+        Goal.start_date.between(start_time, end_time) | Goal.end_date.between(start_time, end_time),Task.user_id == user_id).all()
     
     
     
@@ -1142,6 +1144,7 @@ def time_management_bar():
 def time_manage_plot():
     start_time = request.args.get('start_time')
     end_time = request.args.get('end_time')
+    user_id = request.args.get('user_id')
     
     start_time = datetime.strptime(start_time, '%Y-%m-%dT%H:%M:%S')
     end_time = datetime.strptime(end_time, '%Y-%m-%dT%H:%M:%S')
@@ -1149,7 +1152,8 @@ def time_manage_plot():
     tasks = Task.query.filter(
             (Task.start_time.between(start_time, end_time)) |
             (Task.end_time.between(start_time, end_time)) |
-            ((Task.start_time <= start_time) & (Task.end_time >= end_time))
+            ((Task.start_time <= start_time) & (Task.end_time >= end_time)),
+            Task.user_id == user_id
         ).all()
     
     task_duration = defaultdict(float)  # 存储每个日期的总工作时长（以小时为单位）

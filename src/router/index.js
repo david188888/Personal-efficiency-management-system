@@ -6,7 +6,7 @@ import Targets from '../pages/targets'
 import Statistics from '../pages/statistics'
 import Tasks from '../pages/tasks'
 import Login from '../pages/login'
-import {BrowserRouter,Routes,Route} from 'react-router-dom'
+// import {BrowserRouter,Routes,Route} from 'react-router-dom'
 
 // 路由表写法
 const routes = [
@@ -17,7 +17,7 @@ const routes = [
             // 访问根路径时，默认重定向到home页面  
             {
                 path:'/',
-                element:<Navigate to='home' />
+                element:<Navigate to='login' />
             },
             {
                 path:'home',

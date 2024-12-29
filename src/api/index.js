@@ -92,10 +92,15 @@ export const getData = async () => {
             };
 
             // 处理表格数据
+
+            // 设置category的映射,我的category是0,1,2 分别对应'工作','学习','生活'
+            const categoryMap = ['study', 'career', 'others'];
+
+
             const tableData = tableDataRes.data.map((item) => ({
               name: item.task_name,
               duration: formatDuration(item.total_work_time),
-              category: item.category || 'Uncategorized',
+              category: categoryMap[item.category],
             }));
             // 返回格式化后的数据
             return {
