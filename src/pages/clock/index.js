@@ -75,7 +75,7 @@ import './clock.css'
     if (!taskDescription) {
       Modal.error({
         title: 'Error',
-        content: 'Please enter the task description!',
+        content: 'Please enter the task name!',
       });
       return;
     }
@@ -148,13 +148,13 @@ import './clock.css'
 </div>
 
 <Modal
-  title="Task Description"
+  title="Task name"
   visible={isModalVisible}
   onOk={handleModalOk}
   onCancel={() => setIsModalVisible(false)}
 >
   <Input
-    placeholder="Enter task description"
+    placeholder="Enter task name"
     value={taskDescription}
     onChange={(e) => setTaskDescription(e.target.value)}
   />
