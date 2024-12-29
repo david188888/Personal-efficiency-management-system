@@ -326,14 +326,14 @@ const Task = () => {
         <Input placeholder='Please enter task name'></Input>
     </Form.Item>
 
-    <Form.Item label='Goal title' name='goal_tile'
+    <Form.Item label='Target title' name='goal_tile'
         rules={[
             {
                 required: true,
-                message: 'Please enter goal name',
+                message: 'Please enter target name',
             },
         ]}>
-        <Input placeholder='Please enter goal name'></Input>
+        <Input placeholder='Please enter target name'></Input>
     </Form.Item>
  
     <Form.Item
