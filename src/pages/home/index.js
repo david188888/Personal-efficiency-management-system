@@ -89,7 +89,7 @@ const Home = () => {
           <div className="user">
             <img src={userImg} alt="User Avatar" />
             <div className="userinfo">
-              <p className="name">Welcome {localStorage.getItem('user_name')} !</p>
+              <p className="name">Welcome {localStorage.getItem('username')} !</p>
               <p className="access">Have a good day 😄</p>
             </div>
           </div>

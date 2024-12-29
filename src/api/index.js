@@ -1,5 +1,6 @@
 import axios from 'axios';
 // 图表数据
+const user_id = localStorage.getItem('token')
 export const getData = async () => {
     try {
             // 获取当前日期和一周前的日期
@@ -27,24 +28,28 @@ export const getData = async () => {
                 params: {
                   start_time: formattedStartTime,
                   end_time: formattedEndTime,
+                  user_id: user_id,
                 },
               }),
               axios.get(timeManagementBarURL, {
                 params: {
                   start_time: formattedStartTime,
                   end_time: formattedEndTime,
+                  user_id: user_id,
                 },
               }),
               axios.get(timeManagementPlotURL, {
                 params: {
                   start_time: formattedStartTime,
                   end_time: formattedEndTime,
+                  user_id: user_id,
                 },
               }),
               axios.get(tableDataUrl, {
                 params: {
                   start_time: formattedStartTime,
                   end_time: formattedEndTime,
+                  user_id: user_id,
                 },
               }),
             ]);
