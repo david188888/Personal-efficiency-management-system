@@ -1,9 +1,7 @@
 import React,{useEffect,useState} from "react";
-import * as Icon from "@ant-design/icons";
 import {getData} from "../../api/index";
 import MyEcharts from "../../components/echarts";
 import axios from "axios";
-import dayjs from "dayjs";
 
 const Statistics = () => {
     

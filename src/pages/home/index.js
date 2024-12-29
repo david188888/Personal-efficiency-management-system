@@ -1,8 +1,6 @@
 import React,{useEffect,useState} from "react";
 import {Row,Col,Card,Table} from "antd";
 import * as Icon from "@ant-design/icons";
-import * as echarts from "echarts";
-import MyEcharts from "../../components/echarts";
 import "./home.css";
 import {getData} from "../../api";
 
@@ -87,7 +85,7 @@ const Home = () => {
       <Col span={9}> 
         <Card hoverable>
           <div className="user">
-            <img src={userImg} />
+            <img src={userImg} alt="User Avatar" />
             <div className="userinfo">
               <p className="name">Welcome {localStorage.getItem('user_name')} !</p>
               <p className="access">Have a good day 😄</p>
