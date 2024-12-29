@@ -1,6 +1,7 @@
 # Project Title
 
-**Web Application for [Course Name] Group Assignment**
+**Web Application for Software System Design and Artitecture Assignment**
+
 
 ---
 
