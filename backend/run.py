@@ -1046,10 +1046,6 @@ def task_proportion():
     try:
         start_time_str = request.args.get('start_time')
         end_time_str = request.args.get('end_time')
-
-        if not start_time_str or not end_time_str:
-            return jsonify({'error': 'start_time and end_time are required'}), 400
-
         start_time = datetime.strptime(start_time_str, '%Y-%m-%dT%H:%M:%S')
         end_time = datetime.strptime(end_time_str, '%Y-%m-%dT%H:%M:%S')
 
@@ -1059,28 +1055,28 @@ def task_proportion():
             ((Task.start_time <= start_time) & (Task.end_time >= end_time))
         ).all()
 
-        # 假设任务有类型字段 'type'
-        task_types = defaultdict(int)
+        category_count = {}
         for task in tasks:
-            task_types[task.type] += 1
+            # 以 category_id 作为分类字段，避免引用不存在属性
+            cat_id = task.category_id if task.category_id is not None else 2
+            category_count[cat_id] = category_count.get(cat_id, 0) + 1
 
-        total_tasks = sum(task_types.values())
-        if total_tasks == 0:
-            return jsonify({'error': 'No tasks found in the specified time range.'}), 404
-
+        # 返回适配前端的数据结构
         result = []
-        for task_type, count in task_types.items():
-            proportion = round((count / total_tasks) * 100, 2)  # 百分比保留两位小数
+        for cat_id, count in category_count.items():
+            cat_name = 'Others'
+            if cat_id == 0:
+                cat_name = 'Study'
+            elif cat_id == 1:
+                cat_name = 'Career'
             result.append({
-                'type': task_type,
-                'count': count,
-                'proportion': proportion
+                'type': cat_name,
+                'count': count
             })
-
         return jsonify(result), 200
 
     except ValueError as ve:
-        return jsonify({'error': f'Date format error: {str(ve)}'}), 400
+        return jsonify({'error': str(ve)}), 400
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 

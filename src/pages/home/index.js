@@ -8,24 +8,16 @@ import {getData} from "../../api";
 
 const columns = [
   {
-    title: 'Time',
-    dataIndex: 'time'
+    title: 'Name',
+    dataIndex: 'name'
   },
     {
-      title: 'Task List',
-      dataIndex: 'name'
+      title: 'Category',
+      dataIndex: 'category'
     },
     {
-      title: 'Target List',
-      dataIndex: 'todayBuy'
-    },
-    {
-      title: 'Key tasks',
-      dataIndex: 'monthBuy'
-    },
-    {
-      title: 'Remarks',
-      dataIndex: 'totalBuy'
+      title: 'Duration',
+      dataIndex: 'duration'
     }
   ]
   const countData = [
@@ -78,7 +70,7 @@ const Home = () => {
     useEffect(() => { //页面加载完成后才调用接口
         getData().then(res => {
             // console.log('1',res.data.data)
-            const { tableData} = res.data.data
+            const { tableData} = res.data
             console.log('home数据',tableData)
             setTableData(tableData)
         })

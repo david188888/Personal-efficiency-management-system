@@ -21,7 +21,8 @@ export const getData = async () => {
             const taskProportionURL = '/api/tasks/task_proportion';
             const timeManagementBarURL = '/api/tasks/time_management_bar';
             const timeManagementPlotURL = '/api/tasks/time_management_plot';
-            const [taskProportionRes, timeManagementBarRes, timeManagementPlotRes] = await Promise.all([
+            const tableDataUrl = '/api/tasks/time_management';
+            const [taskProportionRes, timeManagementBarRes, timeManagementPlotRes, tableDataRes] = await Promise.all([
               axios.get(taskProportionURL, {
                 params: {
                   start_time: formattedStartTime,
@@ -40,6 +41,12 @@ export const getData = async () => {
                   end_time: formattedEndTime,
                 },
               }),
+              axios.get(tableDataUrl, {
+                params: {
+                  start_time: formattedStartTime,
+                  end_time: formattedEndTime,
+                },
+              }),
             ]);
       
             // 处理任务占比数据（饼图）
@@ -52,18 +59,44 @@ export const getData = async () => {
             // 处理最近一周每天的任务数量和目标完成度（柱状图）
             const timeManagementBarData = timeManagementBarRes.data;
             const userData = timeManagementBarData.map((item) => ({
-              week_day: item.week_day,
-              task_count: item.task_count,
-              goal_progress: item.goal_progress,
+              date: item.week_day,
+              new: item.task_count,          // 完成的任务数量
+              active: Math.round(item.goal_progress * 100)  // 转换为百分比
             }));
       
             // 处理每天的工作时间变化（折线图）
             const timeManagementPlotData = timeManagementPlotRes.data;
             const orderData = {
               date: timeManagementPlotData.map((item) => item.date),                       // 日期
-              data: timeManagementPlotData.map((item) => parseFloat(item.duration)),        // 工作时长（小时）
+              data: {
+                workHours: timeManagementPlotData.map((item) => parseFloat(item.duration))        // 工作时长（小时）
+              }
             };
-      
+
+            // 添加时间格式化函数
+            const formatDuration = (seconds) => {
+              // 确保输入是数字
+              const totalSeconds = parseFloat(seconds);
+              if (isNaN(totalSeconds)) return '0minutes';
+              
+              const days = Math.floor(totalSeconds / (24 * 3600));
+              const hours = Math.floor((totalSeconds % (24 * 3600)) / 3600);
+              const minutes = Math.floor((totalSeconds % 3600) / 60);
+              
+              let result = [];
+              if (days > 0) result.push(`${days}days`);
+              if (hours > 0) result.push(`${hours}hours`);
+              if (minutes > 0) result.push(`${minutes}minutes`);
+              
+              return result.join(' ') || '0minutes';
+            };
+
+            // 处理表格数据
+            const tableData = tableDataRes.data.map((item) => ({
+              name: item.task_name,
+              duration: formatDuration(item.total_work_time),
+              category: item.category || 'Uncategorized',
+            }));
             // 返回格式化后的数据
             return {
               data: {
@@ -73,6 +106,8 @@ export const getData = async () => {
                 userData,
                 // 折线图数据
                 orderData,
+                // 表格数据
+                tableData,
               },
             };
           } catch (error) {
@@ -86,6 +121,7 @@ export const getData = async () => {
                   date: [],
                   data: [],
                 },
+                tableData: [],
                 error: error.message,
               },
             };
