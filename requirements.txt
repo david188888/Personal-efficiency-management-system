@@ -1,3 +1,4 @@
+alembic==1.14.0
 Flask==3.1.0
 Flask_Cors==5.0.0
 Flask_Migrate==4.0.7
