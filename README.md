@@ -41,8 +41,7 @@ Follow the steps below to set up the project locally.
 
 ### 1. Clone the Repository
 
-First, clone the project repository to your local machine using Git(using ssh):
-
+First, clone the project repository to your local machine using Git (using SSH):
 ```bash
 git clone git@github.com:david188888/Personal-efficiency-management-system.git
 ```
@@ -66,7 +65,33 @@ pip install -r requirements.txt
 ```
 
 #### Database
-You first need to make sure that the MySQL service is installed and configured. Currently, the MySQL login account and password have been set in my `backend/password.py`  (currently using my account and password)
+
+1. **Install and configure MySQL service**
+
+Make sure that the MySQL service has been installed and started in your system. You can refer to the [MySQL official documentation](https://dev.mysql.com/doc/) for installation and configuration.
+
+2. **Create a database**
+
+Open a terminal and log in to MySQL:
+
+```bash
+mysql -u your_mysql_username -p
+```
+
+After entering the password, create a database named `taskmanage`:
+
+```sql
+CREATE DATABASE taskmanage;
+```
+
+3. **Configure database connection**
+
+Open the `backend/password.py` file and change `username` and `password` to your own MySQL account and password:
+
+```python
+username = 'your_mysql_username'
+password = 'your_mysql_password'
+```
 
 ### 3. Start the Services
 
@@ -106,8 +131,8 @@ The back-end service will run on `http://localhost:8080` by default.
 
 - **We automatically insert some preset tasks when you register as a user. The purpose of this is to allow you to experience our task management visualization function more intuitively.**
 - **Since the react service is running on localhost, you may need to refresh the page to get updated content.**
-
-
+- **The visualization should be like this when you enter the website with new account. (You could refresh the website if you could not see the visualization):**
+![visualization](photo.png)
 ---
 
 ## Contact
@@ -117,6 +142,6 @@ For any questions or feedback, please contact:
 - **Name:** David
 - **Email:** david.liu1888888@gmail.com
 
+
 ---
 
-```
