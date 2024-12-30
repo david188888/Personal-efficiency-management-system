@@ -41,10 +41,10 @@ Follow the steps below to set up the project locally.
 
 ### 1. Clone the Repository
 
-First, clone the project repository to your local machine using Git:
+First, clone the project repository to your local machine using Git(using ssh):
 
 ```bash
-git clone [(https://github.com/david188888/Personal-efficiency-management-system/]
+git clone git@github.com:david188888/Personal-efficiency-management-system.git
 ```
 ### 2. Install Dependencies
 
