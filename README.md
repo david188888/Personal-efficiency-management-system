@@ -66,6 +66,9 @@ cd ../backend
 pip install -r requirements.txt
 ```
 
+#### Database
+You first need to make sure that the MySQL service is installed and configured. Currently, the MySQL login account and password have been set in my `backend/password.py`  (currently using my account and password)
+
 ### 3. Start the Services
 
 #### Front End
@@ -97,19 +100,13 @@ The back-end service will run on `http://localhost:8080` by default.
 
 1. Open your web browser and navigate to the front-end application (e.g., `http://localhost:3000`).
 2. You will be presented with the login page.
-3. **Use the following credentials to log in:**
-   - **Username:** `root`
-   - **Password:** `1234567`
+3. Register for your account
+4. Login with your account
 
-### Account Information
+### Tips
 
-- **Purpose of Root Account:**
-  
-  The root account has been pre-configured with relevant tasks and goals to facilitate the visualization functionalities of the website. This setup allows the teacher to operate and inspect the website conveniently without needing to configure tasks manually.
-
-- **Registering a New Account:**
-  
-  If you prefer to create a new account, you can register freely using the registration interface available on the website. Please note that registering a new account will require you to manually add the relevant tasks and goals to ensure full functionality of the visualization features.
+- **We automatically insert some preset tasks when you register as a user. The purpose of this is to allow you to experience our task management visualization function more intuitively.**
+- **Since the react service is running on localhost, you may need to refresh the page to get updated content.**
 
 
 ---
