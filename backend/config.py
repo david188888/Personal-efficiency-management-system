@@ -1,8 +1,7 @@
 import os
+from password import username, password
 
 
-username = 'root'
-password = 'lhy040619'
 
 class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', f'mysql://{username}:{password}@localhost:3306/taskmanage')
