@@ -31,6 +31,74 @@ def add_user():
     )
     db.session.add(new_user)
     db.session.commit()
+    
+    # 添加预设任务
+    preset_tasks = [
+        {
+            'title': 'read book',
+            'description': 'read a book for 30 minutes',
+            'category': 0,  
+            'priority': 2,
+            'point': 1,
+            # 日期start_time和end_time落在一周之内,从当前时间开始
+            'start_time': datetime.now() - timedelta(days=6),
+            'end_time': datetime.now() - timedelta(days=3)
+        },
+        {
+            'title': 'exercise',
+            'description': 'exercise for 30 minutes',
+            'category': 2, 
+            'priority': 1,
+            'point': 1,
+            'start_time': datetime.now() - timedelta(days=5),
+            'end_time': datetime.now() - timedelta(days=2)
+        },
+        {
+            'title': 'write diary',
+            'description': 'write a diary for 30 minutes',
+            'category': 1, 
+            'priority': 3,
+            'point': 2,
+            'start_time': datetime.now() - timedelta(days=4),
+            'end_time':  datetime.now() - timedelta(days=1)
+        },
+        {
+            'title': 'watch movie',
+            'description': 'watch a movie for 1 hour',
+            'category': 3, 
+            'priority': 2,
+            'point': 3,
+            'start_time': datetime.now() - timedelta(days=3),
+            'end_time': datetime.now()
+        },
+        {
+            'title': 'go shopping',
+            'description': 'go shopping for 1 hour',
+            'category': 4, 
+            'priority': 1,
+            'point': 2,
+            'start_time': datetime.now() - timedelta(days=4),
+            'end_time': datetime.now() - timedelta(days=2)
+        }
+    ]
+    
+    
+    
+    for task_data in preset_tasks:
+        new_task = Task(
+            user_id=new_user.user_id,
+            title=task_data['title'],
+            description=task_data['description'],
+            category_id=task_data['category'],
+            priority=task_data['priority'],
+            point=task_data['point'],
+            start_time=task_data['start_time'],
+            end_time=task_data['end_time']
+        )
+        db.session.add(new_task)
+    
+    db.session.commit()
+    
     # 返回新创建的用户信息和正确的状态码还有消息\
     result = {
         'user_id': new_user.user_id,
@@ -41,11 +109,21 @@ def add_user():
     return jsonify({'message': 'User created', 'user': result}), 201
 
 
+@bp.route('/api/users/delete_users', methods=['GET'])
+def delete_users():
+    # 删除所有用户
+    users = User.query.all()
+    for user in users:
+        db.session.delete(user)
+    db.session.commit()
+    return jsonify({'message': 'All users deleted'}), 200
+
+
 @bp.route('/api/users/get_user', methods=['GET'])
 def get_user():
     username = request.args.get('username')
     password = request.args.get('password')
-
+    
     if not username or not password:
         return jsonify({'message': 'Missing username or password'}), 400
 

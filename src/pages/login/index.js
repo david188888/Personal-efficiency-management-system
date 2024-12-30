@@ -53,7 +53,6 @@ const Login = () => {
                 // 登录成功，处理返回的用户数据
                 const userData = response.data;
                 message.success('login success');
-                // console.log(userData);
                 localStorage.setItem('token',userData.user_id);
                 localStorage.setItem('username', userData.username);
                 console.log('token', localStorage.getItem('token'),localStorage.getItem('username'));
