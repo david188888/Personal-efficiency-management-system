@@ -59,10 +59,9 @@ npm install
 
 #### Back End
 
-Navigate to the back-end directory and install the required Python packages using `pip`:
+Install the required Python packages using `pip`:
 
 ```bash
-cd ../backend
 pip install -r requirements.txt
 ```
 
